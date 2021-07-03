@@ -1,0 +1,38 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group 'eitc.pucmm'
+version '1.0-SNAPSHOT'
+
+mainClassName="eitc.pucmm.Main"
+
+run{
+    standardInput = System.in
+}
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+
+    //Framework
+    implementation 'io.javalin:javalin:3.13.7'
+    implementation 'org.slf4j:slf4j-simple:1.7.30'
+
+    //Base de datos
+    compile 'com.h2database:h2:1.4.200'
+
+    //ORM
+    compile 'org.hibernate:hibernate-core:5.4.17.Final'
+    compile 'org.hibernate:hibernate-entitymanager:5.4.17.Final'
+}
+
+test {
+    useJUnitPlatform()
+}
