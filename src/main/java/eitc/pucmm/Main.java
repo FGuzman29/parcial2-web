@@ -96,26 +96,8 @@ public class Main {
         usuario1.setNombre("John");
         usuario1.setRol(Usuario.RoleasAPP.ROLE_ADMIN);
         usuario1.setPassword("admin");
-
-
-        if( UsuarioService.getInstancia().autenticarUsuario(usuario1.getUsuario(),usuario1.getPassword()) ==null) {
-            Usuario usuario2 = new Usuario();
-            usuario2.setUsuario("logueado");
-            usuario2.setNombre("Gabriela");
-            usuario2.setRol(Usuario.RoleasAPP.ROLE_USUARIO);
-            usuario2.setPassword("logueado");
-
-            Usuario usuario3 = new Usuario();
-            usuario3.setUsuario("usuario");
-            usuario3.setNombre("Carlos");
-            usuario3.setRol(Usuario.RoleasAPP.ROLE_USUARIO);
-            usuario3.setPassword("usuario");
-
-            UsuarioService.getInstancia().crear(usuario1);
-            UsuarioService.getInstancia().crear(usuario2);
-            UsuarioService.getInstancia().crear(usuario3);
-        }
     }
+
     public static String getModoConexion() {
         return modoConexion;
     }

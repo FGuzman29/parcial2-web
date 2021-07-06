@@ -18,7 +18,7 @@ public class Cliente implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idCliente;
 
-    private Date fecha;
+    private Date fecha = new Date();
     private String dominio;
     private String ip;
     private String navegador;
