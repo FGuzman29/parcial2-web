@@ -5,9 +5,10 @@ import org.h2.tools.Server;
 import java.sql.SQLException;
 
 public class BootStrapServices {
+
     private static BootStrapServices instancia;
 
-    private void BootStrapServices(){
+    private BootStrapServices(){
 
     }
 
@@ -36,6 +37,6 @@ public class BootStrapServices {
     }
 
     public void init(){
-        startDb();
+         startDb();
     }
 }
