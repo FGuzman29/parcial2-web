@@ -22,7 +22,17 @@ public class Main {
             ctx.render("/publico/autentificacion.vm");
         });
         app.get("/enlaces", ctx -> {
+            ctx.render("/publico/enlaces.vm");
+        });
+
+        app.get("/usuarios", ctx -> {
+           ctx.render("/publico/usuarios.vm");
+        });
+        app.get("/ver", ctx -> {
             ctx.render("/publico/verEnlace.vm");
+        });
+        app.get("/registrarse", ctx -> {
+            ctx.render("/publico/registro.vm");
         });
 
     }
