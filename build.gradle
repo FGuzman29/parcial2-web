@@ -31,6 +31,10 @@ dependencies {
     //ORM
     compile 'org.hibernate:hibernate-core:5.4.17.Final'
     compile 'org.hibernate:hibernate-entitymanager:5.4.17.Final'
+
+    //Plantilla
+    compile "org.apache.velocity:velocity-engine-core:2.2"
+
 }
 
 test {

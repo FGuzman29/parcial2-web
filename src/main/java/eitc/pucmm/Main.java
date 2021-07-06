@@ -2,13 +2,28 @@ package eitc.pucmm;
 
 
 
+import io.javalin.Javalin;
+import io.javalin.plugin.rendering.JavalinRenderer;
+import io.javalin.plugin.rendering.template.JavalinVelocity;
+
 import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.IntStream;
 
 public class Main {
     public static void main(String[] args){
+        Javalin app = Javalin.create().start(7000);
+        JavalinRenderer.register(JavalinVelocity.INSTANCE,".vm");
 
+        app.get("/",ctx -> {
+           ctx.render("/publico/index.vm") ;
+        });
+        app.get("/autentificacion", ctx -> {
+            ctx.render("/publico/autentificacion.vm");
+        });
+        app.get("/enlaces", ctx -> {
+            ctx.render("/publico/verEnlace.vm");
+        });
 
     }
 
