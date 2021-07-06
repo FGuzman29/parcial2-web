@@ -1,0 +1,42 @@
+#parse("publico/header.vm")
+
+<div class="card m-auto mt-3" style="max-width: 80%">
+    <div class="card-header">
+        <h4 class="font-weight-normal ">Usuarios</h4>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+            <tr>
+                <th >Usuario</th>
+                <th >Nombre</th>
+                <th >Rol</th>
+                <th >Fecha de creacion</th>
+                <th >Modificar Credenciales</th>
+            </tr>
+            </thead>
+            <tbody>
+                #foreach($usuario in $usuarios)
+                    <tr>
+                        <td>$usuario.user</td>
+                        <td>$usuario.nombre</td>
+                        <td>$usuario.rol</td>
+                        <td>$usuario.fecha</td>
+                        #if($usuario.rol != "admin")
+                            <td><button class="btn btn-warning" onclick="ascenderUsuario($usuario.id)">Ascender Rol</button></td>
+                        #end
+                #end
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function ascenderUsuario(id){
+        if(confirm("Desea ascender usuario a Admin?")){
+            window.location.href = "/ascender/"+id;
+        }
+    }
+</script>
+#parse("publico/footer.vm")

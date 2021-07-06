@@ -1,0 +1,40 @@
+#parse("publico/header.vm")
+
+    <div class="card m-auto mt-4" style="max-width: 80%;">
+        <div class="card-header">
+            <form class="form" method="post" action="/acortarEnlace">
+                <div class="input-group">
+                    <label class="input-group-text" for="link">Enlace: </label>
+                    <input type="text" class="form-control" placeholder="Ingrese enlace" id="link" name="link">
+                    <button type="submit" class="btn btn-primary">Acortar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="card m-auto mt-4" style="max-width: 80%;">
+        <div class="card-header">
+            <h4 class="font-weight-normal ">Enlaces Acortados</h4>
+
+        </div>
+
+        <table class="table">
+            <tbody>
+            <tr>
+                <td style="max-width: 50%"><p>Ejemplo</p></td>
+                <td style="max-width: 40%"><a href="$link.acortado">ejemplo</a></td>
+                <td style="max-width: 10%"><a class="btn btn-primary" href="/ver">Ver</a></td>
+            </tr>
+            #foreach($link in $user.links)
+
+                <tr>
+                    <td style="max-width: 50%"><p>$link.original</p></td>
+                    <td style="max-width: 40%"><a href="$link.acortado">$link.acortado</a></td>
+                    <td style="max-width: 10%"><a class="btn btn-primary" href="/ver">Ver</a></td>
+                </tr>
+            #end
+            </tbody>
+        </table>
+        </div>
+
+    </div>
+#parse("publico/footer.vm")
