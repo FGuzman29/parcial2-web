@@ -1,2 +1,0 @@
-eitc/pucmm/Main.java
- eitc.pucmm.Main

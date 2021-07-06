@@ -34,43 +34,5 @@ public class Usuario implements Serializable {
     @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER) // La clase "Clase" es la dueña de la relación.
     private Set<Enlace> misEnlaces;
 
-    public String getUsuario() {
-        return usuario;
-    }
 
-    public void setUsuario(String usuario) {
-        this.usuario = usuario;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public RoleasAPP getRol() {
-        return rol;
-    }
-
-    public void setRol(RoleasAPP rol) {
-        this.rol = rol;
-    }
-
-    public Set<Enlace> getMisEnlaces() {
-        return misEnlaces;
-    }
-
-    public void setMisEnlaces(Set<Enlace> misEnlaces) {
-        this.misEnlaces = misEnlaces;
-    }
 }
