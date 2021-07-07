@@ -19,17 +19,11 @@
 
         <table class="table">
             <tbody>
-            <tr>
-                <td style="max-width: 50%"><p>Ejemplo</p></td>
-                <td style="max-width: 40%"><a href="$link.acortado">ejemplo</a></td>
-                <td style="max-width: 10%"><a class="btn btn-primary" href="/ver">Ver</a></td>
-            </tr>
-            #foreach($link in $user.links)
-
+            #foreach($link in $links)
                 <tr>
-                    <td style="max-width: 50%"><p>$link.original</p></td>
-                    <td style="max-width: 40%"><a href="$link.acortado">$link.acortado</a></td>
-                    <td style="max-width: 10%"><a class="btn btn-primary" href="/ver">Ver</a></td>
+                    <td style="max-width: 50%"><p>$link.URL</p></td>
+                    <td style="max-width: 40%"><a href="/$link.idEnlace">$link.URLAcostarda</a></td>
+                    <td style="max-width: 10%"><a class="btn btn-primary" href="/ver/$link.idEnlace">Ver</a></td>
                 </tr>
             #end
             </tbody>

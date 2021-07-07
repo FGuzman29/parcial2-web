@@ -1,5 +1,8 @@
 package eitc.pucmm.controladores;
 
+import antlr.collections.List;
+import eitc.pucmm.Main;
+import eitc.pucmm.entidades.Cliente;
 import eitc.pucmm.entidades.Enlace;
 import eitc.pucmm.entidades.Usuario;
 import eitc.pucmm.servicios.ClienteService;
@@ -9,10 +12,7 @@ import io.javalin.Javalin;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.jasypt.util.text.AES256TextEncryptor;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ApiControlador {
@@ -34,26 +34,86 @@ public class ApiControlador {
     public void aplicarRutas() {
         app.routes(() -> {
 
-            //creando el manejador
-            app.get("/", ctx -> {
+            //Evitar que Enlaces sea null
+            app.before("",ctx -> {
+               if(ctx.sessionAttribute("Enlaces") == null) {
+                   Set<Enlace> enlaces = new HashSet<>();
+                   ctx.sessionAttribute("Enlaces", enlaces);
+               }
+            });
 
-                Usuario usuarioTmp = ctx.sessionAttribute("usuario");
-                String nombre = ctx.cookie("user");
-                String user = textEncryptor.get().decrypt(ctx.cookie("user"));
-                int num = verificarCookie(user,usuarioTmp);
-                if(num==1)
-                {
-                    //no esta logueado
-                    ctx.sessionAttribute("Enlaces", new HashSet<Enlace>());
-                    //ctx.redirect("/comprar");
-                }else if(num==2){
-                    //tiene la cookie creada
-                    ctx.sessionAttribute("usuario", usuarioService.find(user));
-                    ctx.redirect("/CarritoCompra");
-                }else{
-                    //esta logueado
-                    ctx.redirect("/CarritoCompra");
+            //Pagina Inicial
+            //Desde aqui se crean los enlaces cortados
+            app.get("/", ctx -> {
+                Map<String, Object> aux =  new HashMap<>();
+                Set<Enlace> enlaces = ctx.sessionAttribute("Enlaces");
+                aux.put("links",enlaces);
+                if(enlaces != null){
+                    for (Enlace en: enlaces) {
+                        System.out.println(en.getURLAcostarda());
+                    }
                 }
+                ctx.render("/publico/index.vm",aux);
+            });
+
+            //crear enlace
+            app.post("/acortarEnlace", ctx -> {
+                String URL = ctx.formParam("link");
+
+                Usuario usuario = ctx.sessionAttribute("usuario");
+
+                Enlace act = new Enlace();
+                boolean res = false;
+                String cod = "";
+                while(!res){
+                    cod = Main.codeGenerator();
+                    res = EnlaceService.verificarCod(cod);
+                }
+                act.setURL(URL);
+                //act.setURLAcostarda("short.fguzman.codes/"+cod); //metodo de acortar URL
+                act.setURLAcostarda(cod);
+                act.setUsuario(usuario);
+                enlaceService.crear(act);
+
+                Set<Enlace> listaActual = ctx.sessionAttribute("Enlaces");
+                listaActual.add(act);
+                ctx.sessionAttribute("Enlaces", listaActual);
+
+                ctx.redirect("/");
+            });
+
+            //Redireccionar
+            app.get("/:redirect",ctx -> {
+                int id = ctx.pathParam("redirect",Integer.class).get();
+                Enlace aux = EnlaceService.getInstancia().find(id);
+                String detalles = getOS(ctx.userAgent().toString().toLowerCase());
+                String nav = getNav(ctx.header("sec-ch-ua").toString().toLowerCase());
+                Cliente client = new Cliente();
+
+                client.setIp(ctx.ip());
+                client.setSistema(detalles);
+                client.setNavegador(nav);
+
+                aux.setVecesAccesidas(aux.getVecesAccesidas()+1);
+                System.out.println(client.toString());
+                ClienteService.getInstancia().crear(client);
+
+                Set<Cliente> clientes = aux.getClientes();
+                clientes.add(client);
+                aux.setClientes(clientes);
+                EnlaceService.getInstancia().editar(aux);
+
+                ctx.redirect(aux.getURL());
+            });
+
+            app.get("/ver/:id", ctx -> {
+               int id = ctx.pathParam("id",Integer.class).get();
+               Enlace enlace = EnlaceService.getInstancia().find(id);
+
+               Map<String,Object> map = new HashMap<>();
+               map.put("enlace",enlace);
+
+               ctx.render("/publico/verEnlace.vm",map);
             });
 
             //cerrar seccion
@@ -67,7 +127,10 @@ public class ApiControlador {
 
             //carga vista login
             app.get("/login", ctx -> {
-                //redirrect al login
+                ctx.render("/publico/autentificacion.vm");
+            });
+            app.get("/registrarse", ctx -> {
+                ctx.render("/publico/registro.vm");
             });
 
             //INICIO DE SECCION
@@ -230,29 +293,6 @@ public class ApiControlador {
 
             });
 
-            //crear enlace
-            app.post("/crear/Enlace", ctx -> {
-                String URL = ctx.formParam("URL");
-
-                Usuario usuario = ctx.sessionAttribute("usuario");
-
-                Enlace act = new Enlace();
-
-                act.setURL(URL);
-                act.setURLAcostarda("URL"); //metodo de acortar URL
-                act.setUsuario(usuario);
-                if(usuario==null)
-                {
-                    Set<Enlace> listaActual = ctx.sessionAttribute("Enlaces");
-                    listaActual.add(act);
-                    ctx.sessionAttribute("Enlaces", listaActual);
-                }else{
-                    enlaceService.crear(act);
-                }
-
-                ctx.redirect("/ListarEnlaces");
-            });
-
             //eliminar enlace
             app.post("/eliminar/enlace/:id", ctx -> {
                 //obtenemos los valores del session
@@ -308,6 +348,39 @@ public class ApiControlador {
 
         //existe la session
         return 3;
+    }
+
+    private String getOS(String user){
+        String detalles = "";
+        if(user.indexOf("windows") >= 0){
+            detalles = "Windows";
+        }else if(user.indexOf("mac") >= 0){
+            detalles = "MacOs";
+        }else if(user.indexOf("x11") >= 0){
+            detalles = "Unix";
+        }else if(user.indexOf("android") >= 0){
+            detalles = "Android";
+        }else if(user.indexOf("iphone") >= 0){
+            detalles = "IOS";
+        }
+        return detalles;
+
+    }
+    private String getNav(String user){
+        String detalles = "";
+
+        if(user.contains("edge")  ){
+            detalles = "Edge";
+        }else if(user.contains("safari")){
+            detalles = "Safari";
+        }else if(user.contains("opera") ){
+            detalles = "Opera";
+        }else if(user.contains("chrome")){
+            detalles = "Chrome";
+        }else if(user.contains("firefox")){
+            detalles = "Firefox";
+        }
+        return detalles;
     }
 
 }

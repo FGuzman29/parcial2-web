@@ -34,14 +34,14 @@ dependencies {
     compile 'org.hibernate:hibernate-entitymanager:5.4.17.Final'
 
     implementation 'org.projectlombok:lombok:1.18.18'
-    implementation 'org.projectlombok:lombok:1.18.18'
-    implementation 'org.projectlombok:lombok:1.18.18'
+
 
     //Plantilla
     compile "org.apache.velocity:velocity-engine-core:2.2"
 
     //Encriptacion
     implementation 'org.jasypt:jasypt:1.9.3'
+
 
 }
 
