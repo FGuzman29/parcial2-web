@@ -6,6 +6,30 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 
     <title>Acortador</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+
+            var data = google.visualization.arrayToDataTable([
+                ['Element', 'Visitas', { role: 'style' }],
+                #foreach ($mapEntry in $map.entrySet())
+                    ['$mapEntry.key',$mapEntry.value,'blue'],
+                #end
+            ]);
+
+            var options = {
+                title: 'Visitas por fecha',
+                height: 400,
+            };
+
+            var chart = new google.visualization.ColumnChart(document.getElementById('piechart'));
+
+            chart.draw(data, options);
+        }
+    </script>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -22,10 +46,10 @@
                         <a class="nav-link active" href="/">Acortar</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="/ListarEnlaces">Enlaces</a>
+                        <a class="nav-link active" href="/enlaces">Enlaces</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="/ListarUsuarios">Usuarios</a>
+                        <a class="nav-link active" href="/usuarios">Usuarios</a>
                     </li>
                     <li class="nav-item">
                         #if($sesion)
@@ -40,3 +64,6 @@
     </div>
 
 </nav>
+<div class="m-auto" id="piechart" style="width: 90%; height: 500px;"></div>
+</body>
+</html>

@@ -1,6 +1,5 @@
 package eitc.pucmm.controladores;
 
-import antlr.collections.List;
 import eitc.pucmm.Main;
 import eitc.pucmm.entidades.Cliente;
 import eitc.pucmm.entidades.Enlace;
@@ -168,27 +167,14 @@ public class ApiControlador {
                         ctx.cookie("user", usuarioEncriptado, 86400*7);
                         ctx.cookie("pass", claveEncriptada, 86400*7);
                     }
-                    //redireccionando la vista con autorizacion.
                     ctx.redirect("/");
-
                 }
-
 
             });
 
             //error
             app.get("/error", ctx -> {
                 //mando a la vista de error 401
-            });
-
-            //crear usuario
-            app.get("/crear/usuario", ctx -> {
-
-                Map<String, Object> modelo = new HashMap<>();
-                modelo.put("dire", "");
-
-                //enviando al sistema de plantilla.
-                ctx.render("/resources/publico/registro.vm", modelo);
             });
 
             //guardar crear usuario
@@ -212,18 +198,18 @@ public class ApiControlador {
             });
 
             //guardar editar usuario
-            app.post("/ascender/:id", ctx -> {
+            app.post("/ascender/:idUsuario", ctx -> {
                 //obtengo el usuario
-                Usuario tmp = usuarioService.find(ctx.pathParam("id", Integer.class).get());
+                Usuario tmp = usuarioService.find(ctx.pathParam("idUsuario", Integer.class).get());
                 tmp.setRol(Usuario.RoleasAPP.ROLE_ADMIN);
                 usuarioService.editar(tmp);
                 ctx.redirect("/ListarUsuarios");
             });
 
             //eliminar usuario
-            app.post("/eliminar/:id", ctx -> {
+            app.post("/eliminar/:idUsuario", ctx -> {
                 //obtengo el usuario
-                int id =ctx.pathParam("id", Integer.class).get();
+                int id =ctx.pathParam("idUsuario", Integer.class).get();
                 usuarioService.eliminar(id);
                 ctx.redirect("/ListarUsuarios");
             });
@@ -236,18 +222,17 @@ public class ApiControlador {
 
                 if(usuarioTmp.getRol().equals(Usuario.RoleasAPP.ROLE_USUARIO ))
                 {
-
                     ctx.redirect("/error");
                 }
 
 
-                Set<Usuario> lista = (Set<Usuario>) usuarioService.findAll();
+                List<Usuario> lista = usuarioService.findAll();
 
                 Map<String, Object> modelo = new HashMap<>();
                 modelo.put("usuarios", lista);
                 modelo.put("login", usuarioTmp);
                 //enviando al sistema de plantilla.
-                ctx.render("/resources/publico/usuarios.vm",modelo);
+                ctx.render("/publico/usuarios.vm",modelo);
             });
 
 
@@ -277,7 +262,7 @@ public class ApiControlador {
                 //enviando al sistema de plantilla.
                 Map<String, Object> modelo = new HashMap<>();
                 modelo.put("links", lista);
-                ctx.render("/resources/publico/enlaces.vm",modelo);
+                ctx.render("/publico/enlaces.vm",modelo);
             });
 
             //eliminar enlace
