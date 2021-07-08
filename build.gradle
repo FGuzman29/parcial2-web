@@ -33,9 +33,11 @@ dependencies {
     compile 'org.hibernate:hibernate-core:5.4.17.Final'
     compile 'org.hibernate:hibernate-entitymanager:5.4.17.Final'
 
-    implementation 'org.projectlombok:lombok:1.18.18'
-    implementation 'org.projectlombok:lombok:1.18.18'
-    implementation 'org.projectlombok:lombok:1.18.18'
+    //lombok para getter and setter y constructor
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    testCompileOnly 'org.projectlombok:lombok:1.18.20'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
 
     //Plantilla
     compile "org.apache.velocity:velocity-engine-core:2.2"
