@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Entity
@@ -60,5 +62,11 @@ public class Cliente implements Serializable{
 
     public void setSistema(String sistema) {
         Sistema = sistema;
+    }
+
+    public String getFechaFormat() {
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-YYYY");
+        String date = dateFormat.format(fecha);
+        return date;
     }
 }

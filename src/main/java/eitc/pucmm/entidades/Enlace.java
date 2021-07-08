@@ -1,14 +1,9 @@
 package eitc.pucmm.entidades;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.Set;
+import java.util.*;
 import java.util.Set;
 
 @Entity
@@ -83,5 +78,29 @@ public class Enlace implements Serializable {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public Map<String, Integer> calcularDatos(){
+        List<Cliente> clientes1 = new ArrayList<>(clientes);
+        Cliente primero = clientes1.get(0);
+
+        Map<String, Integer> cantPorDia = new HashMap<String, Integer>();
+        String fechaActual = primero.getFechaFormat();
+        int aux = 1;
+        int i = 1;
+        while (i < clientes1.size()){
+            Cliente client = clientes1.get(i);
+            if(!client.getFechaFormat().equalsIgnoreCase(fechaActual)){
+                cantPorDia.put(fechaActual,aux);
+                aux = 1;
+                fechaActual = client.getFechaFormat();
+            }else{
+                aux++;
+            }
+            i++;
+        }
+        cantPorDia.put(fechaActual,aux);
+
+        return cantPorDia;
     }
 }

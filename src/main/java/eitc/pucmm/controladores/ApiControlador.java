@@ -83,7 +83,7 @@ public class ApiControlador {
             });
 
             //Redireccionar
-            app.get("/:redirect",ctx -> {
+            app.get("/re/:redirect",ctx -> {
                 int id = ctx.pathParam("redirect",Integer.class).get();
                 Enlace aux = EnlaceService.getInstancia().find(id);
                 String detalles = getOS(ctx.userAgent().toString().toLowerCase());
@@ -114,6 +114,15 @@ public class ApiControlador {
                map.put("enlace",enlace);
 
                ctx.render("/publico/verEnlace.vm",map);
+            });
+
+            app.get("/estadisticas/:id",ctx -> {
+                int id = ctx.pathParam("id", Integer.class).get();
+                Enlace enlace = EnlaceService.getInstancia().find(id);
+
+                Map<String,Object> map1 = new HashMap<>();
+                map1.put("map",enlace.calcularDatos());
+                ctx.render("/publico/estadistica.vm",map1);
             });
 
             //cerrar seccion

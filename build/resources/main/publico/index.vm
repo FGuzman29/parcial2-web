@@ -22,7 +22,7 @@
             #foreach($link in $links)
                 <tr>
                     <td style="max-width: 50%"><p>$link.URL</p></td>
-                    <td style="max-width: 40%"><a href="/$link.idEnlace">$link.URLAcostarda</a></td>
+                    <td style="max-width: 40%"><a href="/re/$link.idEnlace">$link.URLAcostarda</a></td>
                     <td style="max-width: 10%"><a class="btn btn-primary" href="/ver/$link.idEnlace">Ver</a></td>
                 </tr>
             #end
