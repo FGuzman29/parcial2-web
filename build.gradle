@@ -1,6 +1,8 @@
 plugins {
     id 'java'
     id 'application'
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
+
 }
 
 group 'eitc.pucmm'
@@ -44,7 +46,12 @@ dependencies {
 
 
 }
+shadowJar{
+    archivesBaseName = 'app'
+    archiveClassifier = ''
+    archiveVersion = ''
+}
 
-test {
-    useJUnitPlatform()
+task stage {
+    dependsOn shadowJar
 }
