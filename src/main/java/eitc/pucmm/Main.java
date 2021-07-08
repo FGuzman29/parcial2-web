@@ -34,38 +34,16 @@ public class Main {
             EntrarDatos();
         }
 
-
-
         //Creando la instancia del servidor.
         Javalin app = Javalin.create(config ->{
-            config.addStaticFiles("/publico"); //desde la carpeta de resources
-            config.registerPlugin(new RouteOverviewPlugin("/rutas")); //aplicando plugins de las rutas
             config.enableCorsForAllOrigins();
         }).start(getHerokuAssignedPort());
+
 
         //creando los endpoint de las rutas.
         new ApiControlador(app).aplicarRutas();
         JavalinRenderer.register(JavalinVelocity.INSTANCE,".vm");
 
-        app.get("/",ctx -> {
-           ctx.render("/publico/index.vm") ;
-        });
-        app.get("/autentificacion", ctx -> {
-            ctx.render("/publico/autentificacion.vm");
-        });
-        app.get("/enlaces", ctx -> {
-            ctx.render("/publico/enlaces.vm");
-        });
-
-        app.get("/usuarios", ctx -> {
-           ctx.render("/publico/usuarios.vm");
-        });
-        app.get("/ver", ctx -> {
-            ctx.render("/publico/verEnlace.vm");
-        });
-        app.get("/registrarse", ctx -> {
-            ctx.render("/publico/registro.vm");
-        });
 
     }
 

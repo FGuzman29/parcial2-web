@@ -1,6 +1,8 @@
 plugins {
     id 'java'
     id 'application'
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
+
 }
 
 group 'eitc.pucmm'
@@ -33,11 +35,8 @@ dependencies {
     compile 'org.hibernate:hibernate-core:5.4.17.Final'
     compile 'org.hibernate:hibernate-entitymanager:5.4.17.Final'
 
-    //lombok para getter and setter y constructor
-    compileOnly 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
-    testCompileOnly 'org.projectlombok:lombok:1.18.20'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
+    implementation 'org.projectlombok:lombok:1.18.18'
+
 
     //Plantilla
     compile "org.apache.velocity:velocity-engine-core:2.2"
@@ -45,8 +44,14 @@ dependencies {
     //Encriptacion
     implementation 'org.jasypt:jasypt:1.9.3'
 
+
+}
+shadowJar{
+    archivesBaseName = 'app'
+    archiveClassifier = ''
+    archiveVersion = ''
 }
 
-test {
-    useJUnitPlatform()
+task stage {
+    dependsOn shadowJar
 }
