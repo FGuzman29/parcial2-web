@@ -1,5 +1,8 @@
 package eitc.pucmm.controladores;
 
+import antlr.collections.List;
+import eitc.pucmm.Main;
+import eitc.pucmm.entidades.Cliente;
 import eitc.pucmm.entidades.Enlace;
 import eitc.pucmm.entidades.Usuario;
 import eitc.pucmm.servicios.ClienteService;
@@ -9,10 +12,7 @@ import io.javalin.Javalin;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.jasypt.util.text.AES256TextEncryptor;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ApiControlador {
@@ -34,26 +34,95 @@ public class ApiControlador {
     public void aplicarRutas() {
         app.routes(() -> {
 
-            //creando el manejador
-            app.get("/", ctx -> {
+            //Evitar que Enlaces sea null
+            app.before("",ctx -> {
+               if(ctx.sessionAttribute("Enlaces") == null) {
+                   Set<Enlace> enlaces = new HashSet<>();
+                   ctx.sessionAttribute("Enlaces", enlaces);
+               }
+            });
 
-                Usuario usuarioTmp = ctx.sessionAttribute("usuario");
-                String nombre = ctx.cookie("user");
-                String user = textEncryptor.get().decrypt(ctx.cookie("user"));
-                int num = verificarCookie(user,usuarioTmp);
-                if(num==1)
-                {
-                    //no esta logueado
-                    ctx.sessionAttribute("Enlaces", new HashSet<Enlace>());
-                    //ctx.redirect("/comprar");
-                }else if(num==2){
-                    //tiene la cookie creada
-                    ctx.sessionAttribute("usuario", usuarioService.find(user));
-                    ctx.redirect("/CarritoCompra");
-                }else{
-                    //esta logueado
-                    ctx.redirect("/CarritoCompra");
+            //Pagina Inicial
+            //Desde aqui se crean los enlaces cortados
+            app.get("/", ctx -> {
+                Map<String, Object> aux =  new HashMap<>();
+                Set<Enlace> enlaces = ctx.sessionAttribute("Enlaces");
+                aux.put("links",enlaces);
+                if(enlaces != null){
+                    for (Enlace en: enlaces) {
+                        System.out.println(en.getURLAcostarda());
+                    }
                 }
+                ctx.render("/publico/index.vm",aux);
+            });
+
+            //crear enlace
+            app.post("/acortarEnlace", ctx -> {
+                String URL = ctx.formParam("link");
+
+                Usuario usuario = ctx.sessionAttribute("usuario");
+
+                Enlace act = new Enlace();
+                boolean res = false;
+                String cod = "";
+                while(!res){
+                    cod = Main.codeGenerator();
+                    res = EnlaceService.verificarCod(cod);
+                }
+                act.setURL(URL);
+                //act.setURLAcostarda("short.fguzman.codes/"+cod); //metodo de acortar URL
+                act.setURLAcostarda(cod);
+                act.setUsuario(usuario);
+                enlaceService.crear(act);
+
+                Set<Enlace> listaActual = ctx.sessionAttribute("Enlaces");
+                listaActual.add(act);
+                ctx.sessionAttribute("Enlaces", listaActual);
+
+                ctx.redirect("/");
+            });
+
+            //Redireccionar
+            app.get("/re/:redirect",ctx -> {
+                int id = ctx.pathParam("redirect",Integer.class).get();
+                Enlace aux = EnlaceService.getInstancia().find(id);
+                String detalles = getOS(ctx.userAgent().toString().toLowerCase());
+                String nav = getNav(ctx.header("sec-ch-ua").toString().toLowerCase());
+                Cliente client = new Cliente();
+
+                client.setIp(ctx.ip());
+                client.setSistema(detalles);
+                client.setNavegador(nav);
+
+                aux.setVecesAccesidas(aux.getVecesAccesidas()+1);
+                System.out.println(client.toString());
+                ClienteService.getInstancia().crear(client);
+
+                Set<Cliente> clientes = aux.getClientes();
+                clientes.add(client);
+                aux.setClientes(clientes);
+                EnlaceService.getInstancia().editar(aux);
+
+                ctx.redirect(aux.getURL());
+            });
+
+            app.get("/ver/:id", ctx -> {
+               int id = ctx.pathParam("id",Integer.class).get();
+               Enlace enlace = EnlaceService.getInstancia().find(id);
+
+               Map<String,Object> map = new HashMap<>();
+               map.put("enlace",enlace);
+
+               ctx.render("/publico/verEnlace.vm",map);
+            });
+
+            app.get("/estadisticas/:id",ctx -> {
+                int id = ctx.pathParam("id", Integer.class).get();
+                Enlace enlace = EnlaceService.getInstancia().find(id);
+
+                Map<String,Object> map1 = new HashMap<>();
+                map1.put("map",enlace.calcularDatos());
+                ctx.render("/publico/estadistica.vm",map1);
             });
 
             //cerrar seccion
@@ -67,7 +136,10 @@ public class ApiControlador {
 
             //carga vista login
             app.get("/login", ctx -> {
-                //redirrect al login
+                ctx.render("/publico/autentificacion.vm");
+            });
+            app.get("/registrarse", ctx -> {
+                ctx.render("/publico/registro.vm");
             });
 
             //INICIO DE SECCION
@@ -75,7 +147,7 @@ public class ApiControlador {
                 //Obteniendo la informacion de la peticion. Pendiente validar los parametros.
                 String user = ctx.formParam("usuario");
                 String password = ctx.formParam("password");
-                String recuerdame = ctx.formParam("recuerdame");
+                String recuerdame = ctx.formParam("recordar");
 
                 //Autenticando el usuario para nuestro ejemplo siempre da una respuesta correcta.
                 Usuario usuario = UsuarioService.getInstancia().autenticarUsuario(user, password);
@@ -97,11 +169,10 @@ public class ApiControlador {
                         ctx.cookie("pass", claveEncriptada, 86400*7);
                     }
                     //redireccionando la vista con autorizacion.
+                    ctx.redirect("/");
 
                 }
-                else{
-                    //redirect a la vista de login
-                }
+
 
             });
 
@@ -114,12 +185,10 @@ public class ApiControlador {
             app.get("/crear/usuario", ctx -> {
 
                 Map<String, Object> modelo = new HashMap<>();
-                modelo.put("titulo", "Formulario Creacion usuario");
-                modelo.put("usuario", new Usuario());
-                modelo.put("action", "New");
+                modelo.put("dire", "");
 
                 //enviando al sistema de plantilla.
-                //ctx.render("", modelo);
+                ctx.render("/resources/publico/registro.vm", modelo);
             });
 
             //guardar crear usuario
@@ -131,8 +200,6 @@ public class ApiControlador {
                 Usuario.RoleasAPP rol = Usuario.RoleasAPP.ROLE_USUARIO;
 
                 Set<Enlace> misEnlaces = new HashSet<Enlace>();
-
-
                 Usuario tmp = new Usuario();
                 tmp.setUsuario(usuario);
                 tmp.setNombre(nombre);
@@ -144,60 +211,43 @@ public class ApiControlador {
                 ctx.redirect("/ListarEnlaces");
             });
 
-            //editar usuario
-            app.get("/editar/usuario", ctx -> {
-
-                Usuario tmp = usuarioService.find(ctx.formParam("id", Integer.class).get());
-
-                Map<String, Object> modelo = new HashMap<>();
-                modelo.put("titulo", "Formulario Editar usuario");
-                modelo.put("usuario", tmp);
-                modelo.put("action", "Editar");
-
-                //enviando al sistema de plantilla.
-                //ctx.render("", modelo);
-            });
-
             //guardar editar usuario
-            app.post("/editar/user/:id", ctx -> {
-
+            app.post("/ascender/:id", ctx -> {
                 //obtengo el usuario
                 Usuario tmp = usuarioService.find(ctx.pathParam("id", Integer.class).get());
-                String usuario = ctx.formParam("usuario");
-                String nombre = ctx.formParam("nombre");
-                String password = ctx.formParam("password");
-                String rol = ctx.formParam("rol");
-                tmp.setUsuario(nombre);
-                tmp.setNombre(nombre);
-                tmp.setPassword(password);
-                tmp.setRol(Usuario.RoleasAPP.valueOf(rol));
+                tmp.setRol(Usuario.RoleasAPP.ROLE_ADMIN);
                 usuarioService.editar(tmp);
+                ctx.redirect("/ListarUsuarios");
+            });
 
-                Map<String, Object> modelo = new HashMap<>();
-                //paso datos al modelos
-                //modelo.put("tituloCarito", "Carrito: "+carrito.size());
-                //enviando al sistema de plantilla.
-                //redirect a la lista usuario
+            //eliminar usuario
+            app.post("/eliminar/:id", ctx -> {
+                //obtengo el usuario
+                int id =ctx.pathParam("id", Integer.class).get();
+                usuarioService.eliminar(id);
                 ctx.redirect("/ListarUsuarios");
             });
 
             //listar usuario
             app.get("/ListarUsuarios", ctx -> {
-                Usuario usuarioTmp = ctx.sessionAttribute("usuario");
+
                 //obtenemos los valores del session
+                Usuario usuarioTmp = ctx.sessionAttribute("usuario");
+
                 if(usuarioTmp.getRol().equals(Usuario.RoleasAPP.ROLE_USUARIO ))
                 {
-                    //no tiene acceso
+
                     ctx.redirect("/error");
                 }
 
+
                 Set<Usuario> lista = (Set<Usuario>) usuarioService.findAll();
+
                 Map<String, Object> modelo = new HashMap<>();
-                modelo.put("titulo", "Listado de usuarios");
-                modelo.put("listaUsuarios", lista);
-
+                modelo.put("usuarios", lista);
+                modelo.put("login", usuarioTmp);
                 //enviando al sistema de plantilla.
-
+                ctx.render("/resources/publico/usuarios.vm",modelo);
             });
 
 
@@ -207,8 +257,6 @@ public class ApiControlador {
                 //obtenemos los valores del session
                 Usuario usuario = ctx.sessionAttribute("usuario");
 
-
-                Map<String, Object> modelo = new HashMap<>();
                 //paso los parametro
                 Set<Enlace> lista;
                 //verificamos si esta logueado
@@ -227,30 +275,9 @@ public class ApiControlador {
                 }
 
                 //enviando al sistema de plantilla.
-
-            });
-
-            //crear enlace
-            app.post("/crear/Enlace", ctx -> {
-                String URL = ctx.formParam("URL");
-
-                Usuario usuario = ctx.sessionAttribute("usuario");
-
-                Enlace act = new Enlace();
-
-                act.setURL(URL);
-                act.setURLAcostarda("URL"); //metodo de acortar URL
-                act.setUsuario(usuario);
-                if(usuario==null)
-                {
-                    Set<Enlace> listaActual = ctx.sessionAttribute("Enlaces");
-                    listaActual.add(act);
-                    ctx.sessionAttribute("Enlaces", listaActual);
-                }else{
-                    enlaceService.crear(act);
-                }
-
-                ctx.redirect("/ListarEnlaces");
+                Map<String, Object> modelo = new HashMap<>();
+                modelo.put("links", lista);
+                ctx.render("/resources/publico/enlaces.vm",modelo);
             });
 
             //eliminar enlace
@@ -281,7 +308,7 @@ public class ApiControlador {
                     }
                 }
 
-                ctx.redirect("/ListaEnlaces");
+                ctx.redirect("/ListarEnlaces");
             });
 
         });
@@ -308,6 +335,39 @@ public class ApiControlador {
 
         //existe la session
         return 3;
+    }
+
+    private String getOS(String user){
+        String detalles = "";
+        if(user.indexOf("windows") >= 0){
+            detalles = "Windows";
+        }else if(user.indexOf("mac") >= 0){
+            detalles = "MacOs";
+        }else if(user.indexOf("x11") >= 0){
+            detalles = "Unix";
+        }else if(user.indexOf("android") >= 0){
+            detalles = "Android";
+        }else if(user.indexOf("iphone") >= 0){
+            detalles = "IOS";
+        }
+        return detalles;
+
+    }
+    private String getNav(String user){
+        String detalles = "";
+
+        if(user.contains("edge")  ){
+            detalles = "Edge";
+        }else if(user.contains("safari")){
+            detalles = "Safari";
+        }else if(user.contains("opera") ){
+            detalles = "Opera";
+        }else if(user.contains("chrome")){
+            detalles = "Chrome";
+        }else if(user.contains("firefox")){
+            detalles = "Firefox";
+        }
+        return detalles;
     }
 
 }

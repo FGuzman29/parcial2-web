@@ -18,13 +18,18 @@
             <tbody>
                 #foreach($usuario in $usuarios)
                     <tr>
-                        <td>$usuario.user</td>
+                        <td>$usuario.usuario</td>
                         <td>$usuario.nombre</td>
                         <td>$usuario.rol</td>
-                        <td>$usuario.fecha</td>
+
                         #if($usuario.rol != "admin")
                             <td><button class="btn btn-warning" onclick="ascenderUsuario($usuario.id)">Ascender Rol</button></td>
                         #end
+
+                        #if($usuario.rol != "admin" && $usuario.nombre != "admin" && $usuario.usuario != $login.usuario)
+                            <td><button class="btn btn-warning" onclick="ascenderUsuario($usuario.id)">Eliminar usuario</button></td>
+                        #end
+
                 #end
                 </tr>
             </tbody>
@@ -36,6 +41,12 @@
     function ascenderUsuario(id){
         if(confirm("Desea ascender usuario a Admin?")){
             window.location.href = "/ascender/"+id;
+        }
+    }
+
+    function eliminarUsuario(id){
+        if(confirm("Desea eliminar usuario?")){
+            window.location.href = "/eliminar/"+id;
         }
     }
 </script>

@@ -5,6 +5,7 @@ package eitc.pucmm;
 import eitc.pucmm.controladores.ApiControlador;
 import eitc.pucmm.entidades.Usuario;
 import eitc.pucmm.servicios.BootStrapServices;
+import eitc.pucmm.servicios.UsuarioService;
 import io.javalin.Javalin;
 import io.javalin.core.util.RouteOverviewPlugin;
 import io.javalin.plugin.rendering.JavalinRenderer;
@@ -34,38 +35,16 @@ public class Main {
             EntrarDatos();
         }
 
-
-
         //Creando la instancia del servidor.
         Javalin app = Javalin.create(config ->{
-            config.addStaticFiles("/publico"); //desde la carpeta de resources
-            config.registerPlugin(new RouteOverviewPlugin("/rutas")); //aplicando plugins de las rutas
             config.enableCorsForAllOrigins();
         }).start(getHerokuAssignedPort());
+
 
         //creando los endpoint de las rutas.
         new ApiControlador(app).aplicarRutas();
         JavalinRenderer.register(JavalinVelocity.INSTANCE,".vm");
 
-        app.get("/",ctx -> {
-           ctx.render("/publico/index.vm") ;
-        });
-        app.get("/autentificacion", ctx -> {
-            ctx.render("/publico/autentificacion.vm");
-        });
-        app.get("/enlaces", ctx -> {
-            ctx.render("/publico/enlaces.vm");
-        });
-
-        app.get("/usuarios", ctx -> {
-           ctx.render("/publico/usuarios.vm");
-        });
-        app.get("/ver", ctx -> {
-            ctx.render("/publico/verEnlace.vm");
-        });
-        app.get("/registrarse", ctx -> {
-            ctx.render("/publico/registro.vm");
-        });
 
     }
 
@@ -90,12 +69,17 @@ public class Main {
         return generatedString;
     }
     private static void EntrarDatos() {
-        //anadiendo los usuarios.
-        Usuario usuario1 = new Usuario();
-        usuario1.setUsuario("admin");
-        usuario1.setNombre("John");
-        usuario1.setRol(Usuario.RoleasAPP.ROLE_ADMIN);
-        usuario1.setPassword("admin");
+
+        if(UsuarioService.getInstancia().findAllByUsuario("admin").isEmpty())
+        {
+            //anadiendo los usuarios.
+            Usuario usuario1 = new Usuario();
+            usuario1.setUsuario("admin");
+            usuario1.setNombre("admin");
+            usuario1.setRol(Usuario.RoleasAPP.ROLE_ADMIN);
+            usuario1.setPassword("admin");
+            UsuarioService.getInstancia().crear(usuario1);
+        }
     }
 
     public static String getModoConexion() {
