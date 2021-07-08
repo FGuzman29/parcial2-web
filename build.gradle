@@ -35,9 +35,6 @@ dependencies {
     compile 'org.hibernate:hibernate-core:5.4.17.Final'
     compile 'org.hibernate:hibernate-entitymanager:5.4.17.Final'
 
-    implementation 'org.projectlombok:lombok:1.18.18'
-
-
     //Plantilla
     compile "org.apache.velocity:velocity-engine-core:2.2"
 

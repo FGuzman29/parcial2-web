@@ -147,7 +147,7 @@ public class ApiControlador {
                 //Obteniendo la informacion de la peticion. Pendiente validar los parametros.
                 String user = ctx.formParam("usuario");
                 String password = ctx.formParam("password");
-                String recuerdame = ctx.formParam("recuerdame");
+                String recuerdame = ctx.formParam("recordar");
 
                 //Autenticando el usuario para nuestro ejemplo siempre da una respuesta correcta.
                 Usuario usuario = UsuarioService.getInstancia().autenticarUsuario(user, password);
@@ -169,11 +169,10 @@ public class ApiControlador {
                         ctx.cookie("pass", claveEncriptada, 86400*7);
                     }
                     //redireccionando la vista con autorizacion.
+                    ctx.redirect("/");
 
                 }
-                else{
-                    //redirect a la vista de login
-                }
+
 
             });
 
@@ -186,12 +185,10 @@ public class ApiControlador {
             app.get("/crear/usuario", ctx -> {
 
                 Map<String, Object> modelo = new HashMap<>();
-                modelo.put("titulo", "Formulario Creacion usuario");
-                modelo.put("usuario", new Usuario());
-                modelo.put("action", "New");
+                modelo.put("dire", "");
 
                 //enviando al sistema de plantilla.
-                //ctx.render("", modelo);
+                ctx.render("/resources/publico/registro.vm", modelo);
             });
 
             //guardar crear usuario
@@ -203,8 +200,6 @@ public class ApiControlador {
                 Usuario.RoleasAPP rol = Usuario.RoleasAPP.ROLE_USUARIO;
 
                 Set<Enlace> misEnlaces = new HashSet<Enlace>();
-
-
                 Usuario tmp = new Usuario();
                 tmp.setUsuario(usuario);
                 tmp.setNombre(nombre);
@@ -216,60 +211,43 @@ public class ApiControlador {
                 ctx.redirect("/ListarEnlaces");
             });
 
-            //editar usuario
-            app.get("/editar/usuario", ctx -> {
-
-                Usuario tmp = usuarioService.find(ctx.formParam("id", Integer.class).get());
-
-                Map<String, Object> modelo = new HashMap<>();
-                modelo.put("titulo", "Formulario Editar usuario");
-                modelo.put("usuario", tmp);
-                modelo.put("action", "Editar");
-
-                //enviando al sistema de plantilla.
-                //ctx.render("", modelo);
-            });
-
             //guardar editar usuario
-            app.post("/editar/user/:id", ctx -> {
-
+            app.post("/ascender/:id", ctx -> {
                 //obtengo el usuario
                 Usuario tmp = usuarioService.find(ctx.pathParam("id", Integer.class).get());
-                String usuario = ctx.formParam("usuario");
-                String nombre = ctx.formParam("nombre");
-                String password = ctx.formParam("password");
-                String rol = ctx.formParam("rol");
-                tmp.setUsuario(nombre);
-                tmp.setNombre(nombre);
-                tmp.setPassword(password);
-                tmp.setRol(Usuario.RoleasAPP.valueOf(rol));
+                tmp.setRol(Usuario.RoleasAPP.ROLE_ADMIN);
                 usuarioService.editar(tmp);
+                ctx.redirect("/ListarUsuarios");
+            });
 
-                Map<String, Object> modelo = new HashMap<>();
-                //paso datos al modelos
-                //modelo.put("tituloCarito", "Carrito: "+carrito.size());
-                //enviando al sistema de plantilla.
-                //redirect a la lista usuario
+            //eliminar usuario
+            app.post("/eliminar/:id", ctx -> {
+                //obtengo el usuario
+                int id =ctx.pathParam("id", Integer.class).get();
+                usuarioService.eliminar(id);
                 ctx.redirect("/ListarUsuarios");
             });
 
             //listar usuario
             app.get("/ListarUsuarios", ctx -> {
-                Usuario usuarioTmp = ctx.sessionAttribute("usuario");
+
                 //obtenemos los valores del session
+                Usuario usuarioTmp = ctx.sessionAttribute("usuario");
+
                 if(usuarioTmp.getRol().equals(Usuario.RoleasAPP.ROLE_USUARIO ))
                 {
-                    //no tiene acceso
+
                     ctx.redirect("/error");
                 }
 
+
                 Set<Usuario> lista = (Set<Usuario>) usuarioService.findAll();
+
                 Map<String, Object> modelo = new HashMap<>();
-                modelo.put("titulo", "Listado de usuarios");
-                modelo.put("listaUsuarios", lista);
-
+                modelo.put("usuarios", lista);
+                modelo.put("login", usuarioTmp);
                 //enviando al sistema de plantilla.
-
+                ctx.render("/resources/publico/usuarios.vm",modelo);
             });
 
 
@@ -279,8 +257,6 @@ public class ApiControlador {
                 //obtenemos los valores del session
                 Usuario usuario = ctx.sessionAttribute("usuario");
 
-
-                Map<String, Object> modelo = new HashMap<>();
                 //paso los parametro
                 Set<Enlace> lista;
                 //verificamos si esta logueado
@@ -299,7 +275,9 @@ public class ApiControlador {
                 }
 
                 //enviando al sistema de plantilla.
-
+                Map<String, Object> modelo = new HashMap<>();
+                modelo.put("links", lista);
+                ctx.render("/resources/publico/enlaces.vm",modelo);
             });
 
             //eliminar enlace
@@ -330,7 +308,7 @@ public class ApiControlador {
                     }
                 }
 
-                ctx.redirect("/ListaEnlaces");
+                ctx.redirect("/ListarEnlaces");
             });
 
         });
