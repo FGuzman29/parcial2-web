@@ -10,15 +10,19 @@
     <script type="text/javascript">
         google.charts.load('current', {'packages':['corechart']});
         google.charts.setOnLoadCallback(drawChart);
+            #if($map.entrySet().size() > 0)
 
         function drawChart() {
 
             var data = google.visualization.arrayToDataTable([
                 ['Element', 'Visitas', { role: 'style' }],
-                #foreach ($mapEntry in $map.entrySet())
-                    ['$mapEntry.key',$mapEntry.value,'blue'],
-                #end
+                        #foreach ($mapEntry in $map.entrySet())
+                            ['$mapEntry.key',$mapEntry.value,'blue'],
+                        #end
+
+
             ]);
+
 
             var options = {
                 title: 'Visitas por fecha',
@@ -28,6 +32,10 @@
             var chart = new google.visualization.ColumnChart(document.getElementById('piechart'));
 
             chart.draw(data, options);
+            #else
+               const div =  document.getElementById('piechart')
+                div.innerHTML("<h1>No hay estadisticas disponibles</h1>")
+            #end
         }
     </script>
 </head>
@@ -64,6 +72,10 @@
     </div>
 
 </nav>
-<div class="m-auto" id="piechart" style="width: 90%; height: 500px;"></div>
+#if($map.entrySet().size() > 0)
+    <div class="m-auto" id="piechart" style="width: 90%; height: 500px;"></div>
+#else
+    <h1 class="m-auto">No hay datos disponibles</h1>
+#end
 </body>
 </html>

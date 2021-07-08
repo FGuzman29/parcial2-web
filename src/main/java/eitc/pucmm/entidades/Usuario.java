@@ -72,4 +72,12 @@ public class Usuario implements Serializable {
     public void setMisEnlaces(Set<Enlace> misEnlaces) {
         this.misEnlaces = misEnlaces;
     }
+
+    public int getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(int idUsuario) {
+        this.idUsuario = idUsuario;
+    }
 }

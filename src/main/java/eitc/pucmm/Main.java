@@ -70,7 +70,7 @@ public class Main {
     }
     private static void EntrarDatos() {
 
-        if(UsuarioService.getInstancia().findAllByUsuario("admin").isEmpty())
+        if(UsuarioService.getInstancia().autenticarUsuario("admin","admin") == null)
         {
             //anadiendo los usuarios.
             Usuario usuario1 = new Usuario();

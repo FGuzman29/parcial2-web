@@ -16,21 +16,21 @@
             </tr>
             </thead>
             <tbody>
-                #foreach($usuario in $usuarios)
+                #foreach($usuarioAct in $usuarios)
                     <tr>
-                        <td>$usuario.usuario</td>
-                        <td>$usuario.nombre</td>
-                        <td>$usuario.rol</td>
+                        <td>$usuarioAct.usuario</td>
+                        <td>$usuarioAct.nombre</td>
+                        <td>$usuarioAct.rol</td>
 
-                        #if($usuario.rol != "ROLE_ADMIN")
+                        #if($usuarioAct.rol != "ROLE_ADMIN")
 
-                        <form action="/ascender/$usuario.idUsuario" method="post">
+                        <form action="/ascender/$usuarioAct.idUsuario" method="post">
                             <td><button class="btn btn-warning" type="submit">Ascender Rol</button></td>
                         </form>
                         #end
 
-                        #if($usuario.rol != "ROLE_ADMIN" && $usuario.nombre != "admin" && $usuario.usuario != $login.usuario)
-                        <form action="/eliminar/$usuario.idUsuario" method="post">
+                        #if($usuarioAct.rol != "ROLE_ADMIN" && $usuarioAct.nombre != "admin" && $usuarioAct.usuario != $usuario.usuario)
+                        <form action="/eliminar/$usuarioAct.idUsuario" method="post">
                             <td><button class="btn btn-warning" type="submit">Eliminar usuario</button></td>
                         </form>
                         #end
