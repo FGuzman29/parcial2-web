@@ -24,6 +24,7 @@ public class Usuario implements Serializable {
 
     @PrimaryKeyJoinColumn
     private String usuario;
+
     private String nombre;
     private String password;
     private RoleasAPP rol;  //lo estaremos utilizando para los roles.

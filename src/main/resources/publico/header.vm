@@ -21,7 +21,7 @@
                     <li class="nav-item">
                         <a class="nav-link active" href="/">Acortar</a>
                     </li>
-                    #if($usuario != $null)
+                    #if($usuario.rol == "ROLE_ADMIN")
                         <li class="nav-item">
                             <a class="nav-link active" href="/ListarEnlaces">Enlaces</a>
                         </li>
