@@ -1,6 +1,5 @@
 package eitc.pucmm.controladores;
 
-import antlr.collections.List;
 import eitc.pucmm.Main;
 import eitc.pucmm.entidades.Cliente;
 import eitc.pucmm.entidades.Enlace;
@@ -21,9 +20,6 @@ public class ApiControlador {
     private EnlaceService enlaceService = EnlaceService.getInstancia();
     private UsuarioService usuarioService = UsuarioService.getInstancia();
 
-    //encriptacion
-    private AtomicReference<AES256TextEncryptor> textEncryptor = new AtomicReference<>(new AES256TextEncryptor());
-    private AtomicReference<StrongPasswordEncryptor> passwordEncryptor = new AtomicReference<>(new StrongPasswordEncryptor());
 
 
 
@@ -47,6 +43,7 @@ public class ApiControlador {
             app.get("/", ctx -> {
                 Map<String, Object> aux =  new HashMap<>();
                 Set<Enlace> enlaces = ctx.sessionAttribute("Enlaces");
+                aux.put("usuario",ctx.sessionAttribute("usuario"));
                 aux.put("links",enlaces);
                 if(enlaces != null){
                     for (Enlace en: enlaces) {
@@ -67,7 +64,7 @@ public class ApiControlador {
                 String cod = "";
                 while(!res){
                     cod = Main.codeGenerator();
-                    res = EnlaceService.verificarCod(cod);
+                    res = enlaceService.verificarCod(cod);
                 }
                 act.setURL(URL);
                 //act.setURLAcostarda("short.fguzman.codes/"+cod); //metodo de acortar URL
@@ -85,7 +82,7 @@ public class ApiControlador {
             //Redireccionar
             app.get("/re/:redirect",ctx -> {
                 int id = ctx.pathParam("redirect",Integer.class).get();
-                Enlace aux = EnlaceService.getInstancia().find(id);
+                Enlace aux = enlaceService.find(id);
                 String detalles = getOS(ctx.userAgent().toString().toLowerCase());
                 String nav = getNav(ctx.header("sec-ch-ua").toString().toLowerCase());
                 Cliente client = new Cliente();
@@ -96,31 +93,33 @@ public class ApiControlador {
 
                 aux.setVecesAccesidas(aux.getVecesAccesidas()+1);
                 System.out.println(client.toString());
-                ClienteService.getInstancia().crear(client);
+                clienteService.crear(client);
 
                 Set<Cliente> clientes = aux.getClientes();
                 clientes.add(client);
                 aux.setClientes(clientes);
-                EnlaceService.getInstancia().editar(aux);
+                enlaceService.editar(aux);
 
                 ctx.redirect(aux.getURL());
             });
 
             app.get("/ver/:id", ctx -> {
                int id = ctx.pathParam("id",Integer.class).get();
-               Enlace enlace = EnlaceService.getInstancia().find(id);
+               Enlace enlace = enlaceService.find(id);
 
                Map<String,Object> map = new HashMap<>();
-               map.put("enlace",enlace);
+                map.put("usuario",ctx.sessionAttribute("usuario"));
+                map.put("enlace",enlace);
 
                ctx.render("/publico/verEnlace.vm",map);
             });
 
             app.get("/estadisticas/:id",ctx -> {
                 int id = ctx.pathParam("id", Integer.class).get();
-                Enlace enlace = EnlaceService.getInstancia().find(id);
+                Enlace enlace = enlaceService.find(id);
 
                 Map<String,Object> map1 = new HashMap<>();
+                map1.put("usuario",ctx.sessionAttribute("usuario"));
                 map1.put("map",enlace.calcularDatos());
                 ctx.render("/publico/estadistica.vm",map1);
             });
@@ -147,48 +146,22 @@ public class ApiControlador {
                 //Obteniendo la informacion de la peticion. Pendiente validar los parametros.
                 String user = ctx.formParam("usuario");
                 String password = ctx.formParam("password");
-                String recuerdame = ctx.formParam("recordar");
 
                 //Autenticando el usuario para nuestro ejemplo siempre da una respuesta correcta.
-                Usuario usuario = UsuarioService.getInstancia().autenticarUsuario(user, password);
+                Usuario usuario = usuarioService.autenticarUsuario(user, password);
 
                 if( usuario != null && usuario.getUsuario().equals(user) && usuario.getPassword().equals(password)){
                     //agregando el usuario en la session...
                     ctx.sessionAttribute("usuario", usuario);
 
-                    if(recuerdame!=null)
-                    {
-                        //opciones de encriptancion y guardar cookie por 1 semana
-                        textEncryptor.set(new AES256TextEncryptor());
-                        passwordEncryptor.set(new StrongPasswordEncryptor());
-                        String claveEncriptada = passwordEncryptor.get().encryptPassword(usuario.getPassword());
-
-                        textEncryptor.get().setPassword(claveEncriptada);
-                        String usuarioEncriptado = textEncryptor.get().encrypt(usuario.getPassword());
-                        ctx.cookie("user", usuarioEncriptado, 86400*7);
-                        ctx.cookie("pass", claveEncriptada, 86400*7);
-                    }
-                    //redireccionando la vista con autorizacion.
                     ctx.redirect("/");
-
                 }
-
 
             });
 
             //error
             app.get("/error", ctx -> {
                 //mando a la vista de error 401
-            });
-
-            //crear usuario
-            app.get("/crear/usuario", ctx -> {
-
-                Map<String, Object> modelo = new HashMap<>();
-                modelo.put("dire", "");
-
-                //enviando al sistema de plantilla.
-                ctx.render("/resources/publico/registro.vm", modelo);
             });
 
             //guardar crear usuario
@@ -212,18 +185,19 @@ public class ApiControlador {
             });
 
             //guardar editar usuario
-            app.post("/ascender/:id", ctx -> {
+            app.post("/ascender/:idUsuario", ctx -> {
                 //obtengo el usuario
-                Usuario tmp = usuarioService.find(ctx.pathParam("id", Integer.class).get());
+                System.out.println(ctx.pathParam("idUsuario", Integer.class).get());
+                Usuario tmp = usuarioService.find(ctx.pathParam("idUsuario", Integer.class).get());
                 tmp.setRol(Usuario.RoleasAPP.ROLE_ADMIN);
                 usuarioService.editar(tmp);
                 ctx.redirect("/ListarUsuarios");
             });
 
             //eliminar usuario
-            app.post("/eliminar/:id", ctx -> {
+            app.post("/eliminar/:idUsuario", ctx -> {
                 //obtengo el usuario
-                int id =ctx.pathParam("id", Integer.class).get();
+                int id =ctx.pathParam("idUsuario", Integer.class).get();
                 usuarioService.eliminar(id);
                 ctx.redirect("/ListarUsuarios");
             });
@@ -236,18 +210,17 @@ public class ApiControlador {
 
                 if(usuarioTmp.getRol().equals(Usuario.RoleasAPP.ROLE_USUARIO ))
                 {
-
                     ctx.redirect("/error");
                 }
 
 
-                Set<Usuario> lista = (Set<Usuario>) usuarioService.findAll();
+                List<Usuario> lista = usuarioService.findAll();
 
                 Map<String, Object> modelo = new HashMap<>();
-                modelo.put("usuarios", lista);
-                modelo.put("login", usuarioTmp);
+                modelo.put("usuario", usuarioTmp);
+
                 //enviando al sistema de plantilla.
-                ctx.render("/resources/publico/usuarios.vm",modelo);
+                ctx.render("/publico/usuarios.vm",modelo);
             });
 
 
@@ -258,16 +231,16 @@ public class ApiControlador {
                 Usuario usuario = ctx.sessionAttribute("usuario");
 
                 //paso los parametro
-                Set<Enlace> lista;
+                List<Enlace> lista;
                 //verificamos si esta logueado
                 if (usuario != null) {
                     if(usuario.getRol().equals(Usuario.RoleasAPP.ROLE_USUARIO ))
                     {
                         //cargo enlaces del usuario
-                         lista = usuario.getMisEnlaces();
+                         lista = (List<Enlace>) usuario.getMisEnlaces();
                     }else{
                         //cargo todos los enlaces
-                        lista = (Set<Enlace>) enlaceService.findAll();
+                        lista = enlaceService.findAll();
                     }
                 }else{
                     lista = ctx.sessionAttribute("Enlaces");
@@ -277,7 +250,8 @@ public class ApiControlador {
                 //enviando al sistema de plantilla.
                 Map<String, Object> modelo = new HashMap<>();
                 modelo.put("links", lista);
-                ctx.render("/resources/publico/enlaces.vm",modelo);
+                modelo.put("usuario",usuario);
+                ctx.render("/publico/enlaces.vm",modelo);
             });
 
             //eliminar enlace
@@ -298,13 +272,6 @@ public class ApiControlador {
                         {
                             ctx.sessionAttribute("Enlaces",newEnlace);
                         }
-                    }else{
-                        Set<Enlace> newEnlace = enlaceService.eliminarEnlaceByID(id, usuario.getMisEnlaces());
-
-                        if(newEnlace != null)
-                        {
-                            ctx.sessionAttribute("Enlaces",newEnlace);
-                        }
                     }
                 }
 
@@ -317,24 +284,6 @@ public class ApiControlador {
                 ctx.html("<h1>Error no recuperado:"+exception.getMessage()+"</h1>");
                 exception.printStackTrace();
             });
-    }
-
-
-    private int verificarCookie(String user, Usuario usuarioTmp) {
-        if(user==null){
-            //la cookie no se ha esta creada
-            return 1;
-        }else{
-            //existe el cookie
-            if(usuarioTmp == null)
-            {
-                //no existe la session
-                return 2;
-            }
-        }
-
-        //existe la session
-        return 3;
     }
 
     private String getOS(String user){

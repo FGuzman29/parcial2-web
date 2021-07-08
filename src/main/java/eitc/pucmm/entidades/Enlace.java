@@ -80,27 +80,31 @@ public class Enlace implements Serializable {
         this.usuario = usuario;
     }
 
-    public Map<String, Integer> calcularDatos(){
+    public Map<String, Integer> calcularDatos() {
         List<Cliente> clientes1 = new ArrayList<>(clientes);
-        Cliente primero = clientes1.get(0);
+        if (!clientes1.isEmpty()) {
+            Cliente primero = clientes1.get(0);
 
-        Map<String, Integer> cantPorDia = new HashMap<String, Integer>();
-        String fechaActual = primero.getFechaFormat();
-        int aux = 1;
-        int i = 1;
-        while (i < clientes1.size()){
-            Cliente client = clientes1.get(i);
-            if(!client.getFechaFormat().equalsIgnoreCase(fechaActual)){
-                cantPorDia.put(fechaActual,aux);
-                aux = 1;
-                fechaActual = client.getFechaFormat();
-            }else{
-                aux++;
+            Map<String, Integer> cantPorDia = new HashMap<String, Integer>();
+            String fechaActual = primero.getFechaFormat();
+            int aux = 1;
+            int i = 1;
+            while (i < clientes1.size()) {
+                Cliente client = clientes1.get(i);
+                if (!client.getFechaFormat().equalsIgnoreCase(fechaActual)) {
+                    cantPorDia.put(fechaActual, aux);
+                    aux = 1;
+                    fechaActual = client.getFechaFormat();
+                } else {
+                    aux++;
+                }
+                i++;
             }
-            i++;
-        }
-        cantPorDia.put(fechaActual,aux);
+            cantPorDia.put(fechaActual, aux);
 
-        return cantPorDia;
+            return cantPorDia;
+        }
+        return null;
     }
 }
+

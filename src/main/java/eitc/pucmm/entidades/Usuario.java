@@ -1,8 +1,5 @@
 package eitc.pucmm.entidades;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -22,6 +19,10 @@ public class Usuario implements Serializable {
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int idUsuario;
+
+    @PrimaryKeyJoinColumn
     private String usuario;
     private String nombre;
     private String password;
@@ -70,5 +71,13 @@ public class Usuario implements Serializable {
 
     public void setMisEnlaces(Set<Enlace> misEnlaces) {
         this.misEnlaces = misEnlaces;
+    }
+
+    public int getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(int idUsuario) {
+        this.idUsuario = idUsuario;
     }
 }
