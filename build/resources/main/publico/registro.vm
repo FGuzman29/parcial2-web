@@ -17,6 +17,11 @@
         <div class="card-body">
             <form method="post" action="/crear/user">
 
+                #if($check == true)
+                    <div class = "alert alert-warning" role="alert">
+                        El usuario ya se encuentra registrado, utiliza otro!
+                    </div>
+                #end
                 <div class="form-group mb-3 mt-3">
                     <input type="text" id="usuario" name="usuario" class="form-control" required autofocus placeholder="Usuario" >
                 </div>
