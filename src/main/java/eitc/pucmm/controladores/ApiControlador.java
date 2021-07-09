@@ -19,7 +19,8 @@ public class ApiControlador {
     private ClienteService clienteService = ClienteService.getInstancia();
     private EnlaceService enlaceService = EnlaceService.getInstancia();
     private UsuarioService usuarioService = UsuarioService.getInstancia();
-
+    private Boolean checkLogin= false;
+    private Boolean checkRegister= false;
 
 
 
@@ -72,19 +73,21 @@ public class ApiControlador {
                 act.setURL(URL);
                 //act.setURLAcostarda("short.fguzman.codes/"+cod); //metodo de acortar URL
                 act.setURLAcostarda(cod);
-                act.setUsuario(usuario);
-                enlaceService.crear(act);
+
 
                 Set<Enlace> listaActual;
                 if(usuario!=null)
                 {
+                    act.setUsuario(usuario);
                     listaActual = usuario.getMisEnlaces();
                     listaActual.add(act);
                     usuario.setMisEnlaces(listaActual);
+                    enlaceService.crear(act);
                     usuarioService.editar(usuario);
                 }else{
                     listaActual= ctx.sessionAttribute("Enlaces");
                     listaActual.add(act);
+                    enlaceService.crear(act);
                     ctx.sessionAttribute("Enlaces", listaActual);
                 }
                 ctx.redirect("/");
@@ -138,11 +141,28 @@ public class ApiControlador {
 
             //carga vista login
             app.get("/login", ctx -> {
-                ctx.render("/publico/autentificacion.vm");
+                Map<String, Object> modelo = new HashMap<>();
+                if(checkLogin)
+                {
+                    checkLogin=false;
+                    modelo.put("check", true);
+                }else{
+                    modelo.put("check", checkLogin);
+                }
+                ctx.render("/publico/autentificacion.vm",modelo);
             });
 
             app.get("/registrarse", ctx -> {
-                ctx.render("/publico/registro.vm");
+                Map<String, Object> modelo = new HashMap<>();
+
+                if(checkRegister)
+                {
+                    checkRegister=false;
+                    modelo.put("check", true);
+                }else{
+                    modelo.put("check", checkRegister);
+                }
+                ctx.render("/publico/registro.vm",modelo);
             });
 
             //guardar crear usuario
@@ -155,14 +175,23 @@ public class ApiControlador {
 
                 Set<Enlace> misEnlaces = new HashSet<Enlace>();
                 Usuario tmp = new Usuario();
-                tmp.setUsuario(usuario);
-                tmp.setNombre(nombre);
-                tmp.setPassword(password);
+                tmp.setUsuario(usuario.toLowerCase());
+                tmp.setNombre(nombre.toLowerCase());
+                tmp.setPassword(password.toLowerCase());
                 tmp.setRol(rol);
-                usuarioService.crear(tmp);
 
-                ctx.sessionAttribute("usuario",tmp);
-                ctx.redirect("/ListarEnlaces");
+                if(usuarioService.findAllByUsuario(usuario.toLowerCase()).size() == 0)
+                {
+                    //el usuario no existe
+                    usuarioService.crear(tmp);
+                    ctx.sessionAttribute("usuario",tmp);
+                    ctx.redirect("/ListarEnlaces");
+                    checkRegister= false;
+                }else{
+                    //el usuario ya existe
+                    checkRegister = true;
+                    ctx.redirect("/registrarse");
+                }
             });
 
             //guardar editar usuario
@@ -190,13 +219,16 @@ public class ApiControlador {
                 String password = ctx.formParam("password");
 
                 //Autenticando el usuario para nuestro ejemplo siempre da una respuesta correcta.
-                Usuario usuario = usuarioService.autenticarUsuario(user, password);
+                Usuario usuario = usuarioService.autenticarUsuario(user.toLowerCase(), password.toLowerCase());
 
                 if( usuario != null ){
                     //agregando el usuario en la session...
+                    checkLogin=false;
                     ctx.sessionAttribute("usuario", usuario);
-                    ctx.sessionAttribute("Enlaces", usuario.getMisEnlaces());
                     ctx.redirect("/");
+                }else{
+                    checkLogin=true;
+                    ctx.redirect("/login");
                 }
 
             });
@@ -204,8 +236,7 @@ public class ApiControlador {
             //cerrar seccion
             app.get("/logout", ctx -> {
                 ctx.sessionAttribute("usuario", null);
-                ctx.sessionAttribute("Enlaces", new HashSet<Enlace>());
-                ctx.redirect("/login");
+                ctx.redirect("/");
             });
 
             //listar usuario
@@ -246,16 +277,12 @@ public class ApiControlador {
 
                 if(estado)
                 {
-                    Usuario usuario = ctx.sessionAttribute("usuario");
-                    if(usuario == null)
-                    {
-                        Set<Enlace> listaEnlaces = ctx.sessionAttribute("Enlaces");
-                        Set<Enlace> newEnlace = enlaceService.eliminarEnlaceByID(id, listaEnlaces);
+                    Set<Enlace> listaEnlaces = ctx.sessionAttribute("Enlaces");
+                    Set<Enlace> newEnlace = enlaceService.eliminarEnlaceByID(id, listaEnlaces);
 
-                        if(newEnlace != null)
-                        {
-                            ctx.sessionAttribute("Enlaces",newEnlace);
-                        }
+                    if(newEnlace != null)
+                    {
+                        ctx.sessionAttribute("Enlaces",newEnlace);
                     }
                 }
 

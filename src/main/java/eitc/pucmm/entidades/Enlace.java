@@ -21,7 +21,7 @@ public class Enlace implements Serializable {
     @OneToMany(fetch = FetchType.EAGER) // La clase "Clase" es la dueña de la relación.
     private Set<Cliente> clientes;
 
-    @ManyToOne()
+    @ManyToOne(optional = true)
     private Usuario usuario; //muchos enlaces tienen 1 usuario
 
     public int getIdEnlace() {
