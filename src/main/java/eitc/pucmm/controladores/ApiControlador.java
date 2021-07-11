@@ -95,8 +95,9 @@ public class ApiControlador {
 
             //Redireccionar
             app.get("/re/:redirect",ctx -> {
-                String id = ctx.pathParam("redirect");
-                Enlace aux = enlaceService.findEnlace(id);
+                String id = "short.fguzman.codes/re/" + ctx.pathParam("redirect");
+                Enlace aux = EnlaceService.getInstancia().findEnlace(id);
+                System.out.println(aux.getURL());
                 if(aux != null) {
                     String detalles = getOS(ctx.userAgent().toString().toLowerCase());
                     String nav = getNav(ctx.header("sec-ch-ua").toString().toLowerCase());
@@ -116,8 +117,7 @@ public class ApiControlador {
 
                     ctx.redirect(aux.getURL());
                 }else{
-                    ctx.status(404);
-                    ctx.render("/publico/error.vm");
+                    ctx.render(id);
                 }
             });
 
