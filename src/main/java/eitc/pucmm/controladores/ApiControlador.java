@@ -71,8 +71,8 @@ public class ApiControlador {
                     res = enlaceService.verificarCod(cod);
                 }
                 act.setURL(URL);
-                //act.setURLAcostarda("short.fguzman.codes/"+cod); //metodo de acortar URL
-                act.setURLAcostarda(cod);
+                act.setURLAcostarda("short.fguzman.codes/re/"+cod); //metodo de acortar URL
+                //act.setURLAcostarda(cod);
 
 
                 Set<Enlace> listaActual;
@@ -95,25 +95,30 @@ public class ApiControlador {
 
             //Redireccionar
             app.get("/re/:redirect",ctx -> {
-                int id = ctx.pathParam("redirect",Integer.class).get();
-                Enlace aux = enlaceService.find(id);
-                String detalles = getOS(ctx.userAgent().toString().toLowerCase());
-                String nav = getNav(ctx.header("sec-ch-ua").toString().toLowerCase());
-                Cliente client = new Cliente();
+                String id = ctx.pathParam("redirect");
+                Enlace aux = enlaceService.findEnlace(id);
+                if(aux != null) {
+                    String detalles = getOS(ctx.userAgent().toString().toLowerCase());
+                    String nav = getNav(ctx.header("sec-ch-ua").toString().toLowerCase());
+                    Cliente client = new Cliente();
 
-                client.setIp(ctx.ip());
-                client.setSistema(detalles);
-                client.setNavegador(nav);
+                    client.setIp(ctx.ip());
+                    client.setSistema(detalles);
+                    client.setNavegador(nav);
 
-                aux.setVecesAccesidas(aux.getVecesAccesidas()+1);
-                clienteService.crear(client);
+                    aux.setVecesAccesidas(aux.getVecesAccesidas() + 1);
+                    clienteService.crear(client);
 
-                Set<Cliente> clientes = aux.getClientes();
-                clientes.add(client);
-                aux.setClientes(clientes);
-                enlaceService.editar(aux);
+                    Set<Cliente> clientes = aux.getClientes();
+                    clientes.add(client);
+                    aux.setClientes(clientes);
+                    enlaceService.editar(aux);
 
-                ctx.redirect(aux.getURL());
+                    ctx.redirect(aux.getURL());
+                }else{
+                    ctx.status(404);
+                    ctx.render("/publico/error.vm");
+                }
             });
 
             app.get("/ver/:id", ctx -> {
