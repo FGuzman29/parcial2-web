@@ -72,7 +72,7 @@ public class EnlaceService extends GestionDb<Enlace> {
         EntityManager em = getEntityManager();
         List<Enlace> enlaces;
         try {
-            Query query = em.createNativeQuery("select * from Enlace where URLAcostarda = " + path.toString(), Enlace.class);
+            Query query = em.createNativeQuery("select * from Enlace where URLAcostarda = '" + path.toString()+"'", Enlace.class);
             enlaces = query.getResultList();
             return enlaces.get(0);
         } catch (Exception e) {
