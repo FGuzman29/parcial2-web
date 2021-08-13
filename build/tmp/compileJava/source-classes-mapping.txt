@@ -11,10 +11,10 @@ eitc/pucmm/servicios/EnlaceService.java
 eitc/pucmm/entidades/Usuario.java
  eitc.pucmm.entidades.Usuario
  eitc.pucmm.entidades.Usuario$RoleasAPP
-eitc/pucmm/entidades/Enlace.java
- eitc.pucmm.entidades.Enlace
 eitc/pucmm/servicios/UsuarioService.java
  eitc.pucmm.servicios.UsuarioService
+eitc/pucmm/entidades/Enlace.java
+ eitc.pucmm.entidades.Enlace
 eitc/pucmm/controladores/ApiControlador.java
  eitc.pucmm.controladores.ApiControlador
 eitc/pucmm/Main.java
