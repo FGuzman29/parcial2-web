@@ -3,6 +3,7 @@ package eitc.pucmm.entidades;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.Set;
 
@@ -32,7 +33,7 @@ public class Usuario implements Serializable {
     //Indicando las referencias bidireccional de la entidad Clase.
 
     @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER) // La clase "Clase" es la dueña de la relación.
-    private Set<Enlace> misEnlaces;
+    private Set<Enlace> misEnlaces = new HashSet<Enlace>();
 
     public String getUsuario() {
         return usuario;

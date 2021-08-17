@@ -11,6 +11,7 @@ import io.javalin.Javalin;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.jasypt.util.text.AES256TextEncryptor;
 
+import java.net.InetAddress;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -71,8 +72,8 @@ public class ApiControlador {
                     res = enlaceService.verificarCod(cod);
                 }
                 act.setURL(URL);
-                act.setURLAcostarda("short.fguzman.codes/re/"+cod); //metodo de acortar URL
-                //act.setURLAcostarda(cod);
+                //act.setURLAcostarda("short.fguzman.codes/"+cod); //metodo de acortar URL
+                act.setURLAcostarda(cod);
 
 
                 Set<Enlace> listaActual;
@@ -95,30 +96,25 @@ public class ApiControlador {
 
             //Redireccionar
             app.get("/re/:redirect",ctx -> {
-                String id = "short.fguzman.codes/re/" + ctx.pathParam("redirect");
-                Enlace aux = EnlaceService.getInstancia().findEnlace(id);
-                System.out.println(aux.getURL());
-                if(aux != null) {
-                    String detalles = getOS(ctx.userAgent().toString().toLowerCase());
-                    String nav = getNav(ctx.header("sec-ch-ua").toString().toLowerCase());
-                    Cliente client = new Cliente();
+                int id = ctx.pathParam("redirect",Integer.class).get();
+                Enlace aux = enlaceService.find(id);
+                String detalles = getOS(ctx.userAgent().toString().toLowerCase());
+                String nav = getNav(ctx.header("sec-ch-ua").toString().toLowerCase());
+                Cliente client = new Cliente();
+                InetAddress ip= InetAddress.getLocalHost(); //codigo para obtener la ip de la PC ACTUAL
+                client.setIp(ip.getHostAddress());
+                client.setSistema(detalles);
+                client.setNavegador(nav);
 
-                    client.setIp(ctx.ip());
-                    client.setSistema(detalles);
-                    client.setNavegador(nav);
+                aux.setVecesAccesidas(aux.getVecesAccesidas()+1);
+                clienteService.crear(client);
 
-                    aux.setVecesAccesidas(aux.getVecesAccesidas() + 1);
-                    clienteService.crear(client);
+                Set<Cliente> clientes = aux.getClientes();
+                clientes.add(client);
+                aux.setClientes(clientes);
+                enlaceService.editar(aux);
 
-                    Set<Cliente> clientes = aux.getClientes();
-                    clientes.add(client);
-                    aux.setClientes(clientes);
-                    enlaceService.editar(aux);
-
-                    ctx.redirect(aux.getURL());
-                }else{
-                    ctx.render(id);
-                }
+                ctx.redirect(aux.getURL());
             });
 
             app.get("/ver/:id", ctx -> {
@@ -128,21 +124,10 @@ public class ApiControlador {
                Map<String,Object> map = new HashMap<>();
                 map.put("usuario",ctx.sessionAttribute("usuario"));
                 map.put("enlace",enlace);
+                map.put("map",enlace.calcularDatos());
 
                ctx.render("/publico/verEnlace.vm",map);
             });
-
-            app.get("/estadisticas/:id",ctx -> {
-                int id = ctx.pathParam("id", Integer.class).get();
-                Enlace enlace = enlaceService.find(id);
-
-                Map<String,Object> map1 = new HashMap<>();
-                map1.put("usuario",ctx.sessionAttribute("usuario"));
-                map1.put("map",enlace.calcularDatos());
-                ctx.render("/publico/estadistica.vm",map1);
-            });
-
-
 
             //carga vista login
             app.get("/login", ctx -> {
@@ -178,7 +163,6 @@ public class ApiControlador {
                 String password = ctx.formParam("password");
                 Usuario.RoleasAPP rol = Usuario.RoleasAPP.ROLE_USUARIO;
 
-                Set<Enlace> misEnlaces = new HashSet<Enlace>();
                 Usuario tmp = new Usuario();
                 tmp.setUsuario(usuario.toLowerCase());
                 tmp.setNombre(nombre.toLowerCase());
@@ -199,11 +183,21 @@ public class ApiControlador {
                 }
             });
 
-            //guardar editar usuario
+            //guardar editar usuario ROL ADMIN
             app.post("/ascender/:idUsuario", ctx -> {
                 //obtengo el usuario
                 Usuario tmp = usuarioService.find(ctx.pathParam("idUsuario", Integer.class).get());
                 tmp.setRol(Usuario.RoleasAPP.ROLE_ADMIN);
+                usuarioService.editar(tmp);
+                ctx.redirect("/ListarUsuarios");
+            });
+
+
+            //guardar editar usuario ROL NORMAL
+            app.post("/descender/:idUsuario", ctx -> {
+                //obtengo el usuario
+                Usuario tmp = usuarioService.find(ctx.pathParam("idUsuario", Integer.class).get());
+                tmp.setRol(Usuario.RoleasAPP.ROLE_USUARIO);
                 usuarioService.editar(tmp);
                 ctx.redirect("/ListarUsuarios");
             });

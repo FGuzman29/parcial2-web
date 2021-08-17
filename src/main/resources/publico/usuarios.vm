@@ -2,7 +2,7 @@
 
 <div class="card m-auto mt-3" style="max-width: 80%">
     <div class="card-header">
-        <h4 class="font-weight-normal ">Usuarios</h4>
+        <h4 class="font-weight-normal text-center">Lista de Usuarios</h4>
     </div>
     <div class="card-body">
         <table class="table">
@@ -23,20 +23,29 @@
                         <td>$usuarioAct.rol</td>
 
                         #if($usuarioAct.rol != "ROLE_ADMIN")
-
-                        <form action="/ascender/$usuarioAct.idUsuario" method="post">
-                            <td><button class="btn btn-warning" type="submit">Ascender Rol</button></td>
-                        </form>
+                            <form action="/ascender/$usuarioAct.idUsuario" method="post">
+                                <td><button class="btn btn-warning" type="submit">Ascender Rol</button></td>
+                            </form>
                         #end
 
-                        #if($usuarioAct.rol != "ROLE_ADMIN" && $usuarioAct.nombre != "admin" && $usuarioAct.usuario != $usuario.usuario)
-                        <form action="/eliminar/$usuarioAct.idUsuario" method="post">
-                            <td><button class="btn btn-warning" type="submit">Eliminar usuario</button></td>
-                        </form>
+                        #if($usuario.usuario=="admin" && $usuarioAct.usuario != $usuario.usuario)
+                            #if($usuarioAct.rol == "ROLE_ADMIN")
+                                <form action="/descender/$usuarioAct.idUsuario" method="post">
+                                    <td><button class="btn btn-warning" type="submit">Descender Rol</button></td>
+                                </form>
+                            #end
+                                <form action="/eliminar/$usuarioAct.idUsuario" method="post">
+                                    <td><button class="btn btn-danger" type="submit">Eliminar usuario</button></td>
+                                </form>
+                        #else
+                            #if($usuarioAct.rol != "ROLE_ADMIN")
+                                <form action="/eliminar/$usuarioAct.idUsuario" method="post">
+                                    <td><button class="btn btn-danger" type="submit">Eliminar usuario</button></td>
+                                </form>
+                            #end
                         #end
-
+                    </tr>
                 #end
-                </tr>
             </tbody>
         </table>
     </div>
