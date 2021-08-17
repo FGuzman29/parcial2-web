@@ -49,9 +49,9 @@ public class Main {
     }
 
     public static String codeGenerator() {
-        int[] arr = {58, 59, 60, 61, 62, 63, 64, 91, 92, 93, 94, 95, 96};
+        int[] arr = {58, 59, 60, 61, 62, 63, 64};
         int leftLimit = 48; // letter 'a'
-        int rightLimit = 122; // letter 'z'
+        int rightLimit = 90; // letter 'z'
         int targetStringLength = 10;
         Random random = new Random();
         StringBuilder buffer = new StringBuilder(targetStringLength);

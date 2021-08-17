@@ -1,10 +1,12 @@
 package eitc.pucmm.servicios;
 
+import com.sun.tools.jconsole.JConsoleContext;
 import eitc.pucmm.entidades.Enlace;
 
 import javax.persistence.*;
 import javax.xml.transform.Result;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -28,8 +30,8 @@ public class EnlaceService extends GestionDb<Enlace> {
         EntityManager em = getEntityManager();
         boolean res = false;
         try {
-            Query query = em.createNativeQuery("select * from Enlace where URLAcostarda = " + cod.toString(), Enlace.class);
-
+            Query query = em.createQuery("select e from Enlace e where e.URLAcostarda like :cod", Enlace.class);
+            query.setParameter("cod",cod+"%");
              res = query.getResultList().isEmpty();
         } catch (Exception e) {
             res = true;
@@ -70,14 +72,11 @@ public class EnlaceService extends GestionDb<Enlace> {
 
     public Enlace findEnlace(String path) {
         EntityManager em = getEntityManager();
-        List<Enlace> enlaces;
-        try {
-            Query query = em.createNativeQuery("select * from Enlace where URLAcostarda = " + path.toString(), Enlace.class);
-            enlaces = query.getResultList();
-            return enlaces.get(0);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        Query query = em.createQuery("select e from Enlace e where e.URLAcostarda like :cod" , Enlace.class);
+        query.setParameter("cod","'%"+path+"%'");
+        List<Enlace> enlaces  = query.getResultList();
+        return enlaces.get(0);
     }
+
+
 }
