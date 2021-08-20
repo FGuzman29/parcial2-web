@@ -9,10 +9,29 @@ import eitc.pucmm.servicios.ClienteService;
 import eitc.pucmm.servicios.EnlaceService;
 import eitc.pucmm.servicios.UsuarioService;
 import io.javalin.Javalin;
+<<<<<<< Updated upstream
 import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.jasypt.util.text.AES256TextEncryptor;
 
+||||||| constructed merge base
+import org.jasypt.util.password.StrongPasswordEncryptor;
+import org.jasypt.util.text.AES256TextEncryptor;
+
+import java.net.InetAddress;
+=======
+import kong.unirest.HttpResponse;
+import kong.unirest.JsonNode;
+import kong.unirest.Unirest;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.URL;
+>>>>>>> Stashed changes
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ApiControlador {
@@ -61,23 +80,43 @@ public class ApiControlador {
                 String URL = ctx.formParam("link");
 
                 Usuario usuario = ctx.sessionAttribute("usuario");
-
                 Enlace act = new Enlace();
+<<<<<<< Updated upstream
                 boolean res = false;
                 String cod = "";
                 while(!res){
                     cod = Main.codeGenerator();
                     res = EnlaceService.verificarCod(cod);
                 }
+||||||| constructed merge base
+                boolean res = false;
+                String cod = "";
+                while(!res){
+                    cod = Main.codeGenerator();
+                    res = enlaceService.verificarCod(cod);
+                }
+=======
+>>>>>>> Stashed changes
                 act.setURL(URL);
                 //act.setURLAcostarda("short.fguzman.codes/"+cod); //metodo de acortar URL
+<<<<<<< Updated upstream
                 act.setURLAcostarda(cod);
                 act.setUsuario(usuario);
                 enlaceService.crear(act);
+||||||| constructed merge base
+                act.setURLAcostarda(cod);
+=======
+>>>>>>> Stashed changes
 
+<<<<<<< Updated upstream
                 Set<Enlace> listaActual = ctx.sessionAttribute("Enlaces");
                 listaActual.add(act);
                 ctx.sessionAttribute("Enlaces", listaActual);
+||||||| constructed merge base
+=======
+                act.setURLAcostarda(enlaceService.getPreview(URL));
+                act.setFotoBase64(enlaceService.getAcortado());
+>>>>>>> Stashed changes
 
                 ctx.redirect("/");
             });

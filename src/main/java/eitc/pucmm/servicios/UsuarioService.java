@@ -22,8 +22,6 @@ public class UsuarioService extends GestionDb<Usuario> {
         return instancia;
     }
 
-
-
     /**
      *
      * @param user

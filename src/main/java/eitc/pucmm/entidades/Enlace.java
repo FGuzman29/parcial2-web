@@ -16,6 +16,8 @@ public class Enlace implements Serializable {
     private Date fecha = new Date();
     private String URLAcostarda;
     private int vecesAccesidas = 0;
+    @Lob
+    private String fotoBase64;
 
     //Indicando las referencias unidireccional de la entidad Clase.
     @OneToMany(fetch = FetchType.EAGER) // La clase "Clase" es la dueña de la relación.
@@ -23,6 +25,7 @@ public class Enlace implements Serializable {
 
     @ManyToOne()
     private Usuario usuario; //muchos enlaces tienen 1 usuario
+
 
     public int getIdEnlace() {
         return idEnlace;
@@ -80,7 +83,21 @@ public class Enlace implements Serializable {
         this.usuario = usuario;
     }
 
+<<<<<<< Updated upstream
     public Map<String, Integer> calcularDatos(){
+||||||| constructed merge base
+    public Map<String, Integer> calcularDatos() {
+=======
+    public String getFotoBase64() {
+        return fotoBase64;
+    }
+
+    public void setFotoBase64(String fotoBase64) {
+        this.fotoBase64 = fotoBase64;
+    }
+
+    public Map<String, Integer> calcularDatos() {
+>>>>>>> Stashed changes
         List<Cliente> clientes1 = new ArrayList<>(clientes);
         Cliente primero = clientes1.get(0);
 

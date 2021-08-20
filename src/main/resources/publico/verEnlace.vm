@@ -57,6 +57,56 @@
     </div>
 
     </div>
+<<<<<<< Updated upstream
+||||||| constructed merge base
+
+<div class="card m-auto" style="max-width: 95%">
+    <div class="card-header">
+        <h5 class="card-title text-center">
+            Grafico de visitas
+        </h5>
+
+    </div>
+    <div class="card-body">
+        #if($map.entrySet().size() > 0)
+            <div class="m-auto" id="piechart" style="width: 90%; height: 500px;"></div>
+        #else
+            <h3 class="m-auto text-center">No hay datos disponibles</h3>
+        #end
+    </div>
+</div>
+=======
+<div class="row row-cols-1 row-cols-md-2 mb-3 mt-3 m-auto  text-center" style="max-width: 97%">
+    <div class="col-6">
+
+    <div class="card m-auto" style="max-width: 95%; padding-bottom: 10px">
+        <div class="card-header">
+            <h5 class="card-title text-center">
+                Grafico de visitas
+            </h5>
+
+        </div>
+        <div class="card-body">
+            #if($map.entrySet().size() > 0)
+                <div class="m-auto" id="piechart" style="width: 90%; height: 500px;"></div>
+            #else
+                <h3 class="m-auto text-center">No hay datos disponibles</h3>
+            #end
+        </div>
+    </div>
+    </div>
+    <div class="col-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Preview</h5>
+            </div>
+            <div class="card-body">
+                <img src="data:image/png;base64,${enlace.getFotoBase64()}" class="img-fluid rounded-start">
+            </div>
+        </div>
+    </div>
+</div>
+>>>>>>> Stashed changes
     <div class="card m-auto" style="max-width: 95%">
         <div class="card-header">
             <h5 class="card-title">

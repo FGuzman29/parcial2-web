@@ -3,6 +3,7 @@ package eitc.pucmm;
 
 
 import eitc.pucmm.controladores.ApiControlador;
+import eitc.pucmm.controladores.SoapControladora;
 import eitc.pucmm.entidades.Usuario;
 import eitc.pucmm.servicios.BootStrapServices;
 import io.javalin.Javalin;
@@ -37,9 +38,10 @@ public class Main {
         //Creando la instancia del servidor.
         Javalin app = Javalin.create(config ->{
             config.enableCorsForAllOrigins();
-        }).start(getHerokuAssignedPort());
+        });
+        new SoapControladora(app).aplicarRutas();
 
-
+        app.start(getHerokuAssignedPort());
         //creando los endpoint de las rutas.
         new ApiControlador(app).aplicarRutas();
         JavalinRenderer.register(JavalinVelocity.INSTANCE,".vm");
