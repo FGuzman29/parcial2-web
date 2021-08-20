@@ -1,11 +1,9 @@
 package eitc.pucmm.entidades;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.Set;
 
@@ -22,7 +20,12 @@ public class Usuario implements Serializable {
     }
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int idUsuario;
+
+    @PrimaryKeyJoinColumn
     private String usuario;
+
     private String nombre;
     private String password;
     private RoleasAPP rol;  //lo estaremos utilizando para los roles.
@@ -30,7 +33,7 @@ public class Usuario implements Serializable {
     //Indicando las referencias bidireccional de la entidad Clase.
 
     @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER) // La clase "Clase" es la dueña de la relación.
-    private Set<Enlace> misEnlaces;
+    private Set<Enlace> misEnlaces = new HashSet<Enlace>();
 
     public String getUsuario() {
         return usuario;
@@ -70,5 +73,13 @@ public class Usuario implements Serializable {
 
     public void setMisEnlaces(Set<Enlace> misEnlaces) {
         this.misEnlaces = misEnlaces;
+    }
+
+    public int getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(int idUsuario) {
+        this.idUsuario = idUsuario;
     }
 }

@@ -2,7 +2,7 @@
 
 <div class="card m-auto mt-3" style="max-width: 80%">
     <div class="card-header">
-        <h4 class="font-weight-normal ">Enlaces</h4>
+        <h4 class="font-weight-normal  text-center"> Lista de Enlaces </h4>
     </div>
     <div class="card-body">
         <table class="table">
@@ -17,10 +17,16 @@
             <tbody>
                 #foreach($link in $links)
                 <tr>
-                    <td style="max-width: 50%">$link.original</td>
-                    <td>$link.acortado</td>
-                    <td>$link.visitas</td>
-                    <td><a class="btn btn-primary" href="/ver/$link.id">Ver</a></td>
+                    <td style="max-width: 50%">$link.URL</td>
+                    <td>$link.URLAcostarda</td>
+                    <td>$link.vecesAccesidas</td>
+                    <td><a class="btn btn-primary" href="/ver/$link.idEnlace">Ver</a>
+
+                    #if($usuario.rol == "ROLE_ADMIN")
+                        <form action="/eliminar/enlace/$link.idEnlace" method="post">
+                            <button class="btn btn-warning" type="submit">Eliminar Enlace</button></td>
+                        </form>
+                    #end
                 #end
             </tr>
             </tbody>

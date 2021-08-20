@@ -23,7 +23,7 @@ public class Enlace implements Serializable {
     @OneToMany(fetch = FetchType.EAGER) // La clase "Clase" es la dueña de la relación.
     private Set<Cliente> clientes;
 
-    @ManyToOne()
+    @ManyToOne(optional = true)
     private Usuario usuario; //muchos enlaces tienen 1 usuario
 
 
@@ -83,11 +83,6 @@ public class Enlace implements Serializable {
         this.usuario = usuario;
     }
 
-<<<<<<< Updated upstream
-    public Map<String, Integer> calcularDatos(){
-||||||| constructed merge base
-    public Map<String, Integer> calcularDatos() {
-=======
     public String getFotoBase64() {
         return fotoBase64;
     }
@@ -97,27 +92,30 @@ public class Enlace implements Serializable {
     }
 
     public Map<String, Integer> calcularDatos() {
->>>>>>> Stashed changes
         List<Cliente> clientes1 = new ArrayList<>(clientes);
-        Cliente primero = clientes1.get(0);
+        if (!clientes1.isEmpty()) {
+            Cliente primero = clientes1.get(0);
 
-        Map<String, Integer> cantPorDia = new HashMap<String, Integer>();
-        String fechaActual = primero.getFechaFormat();
-        int aux = 1;
-        int i = 1;
-        while (i < clientes1.size()){
-            Cliente client = clientes1.get(i);
-            if(!client.getFechaFormat().equalsIgnoreCase(fechaActual)){
-                cantPorDia.put(fechaActual,aux);
-                aux = 1;
-                fechaActual = client.getFechaFormat();
-            }else{
-                aux++;
+            Map<String, Integer> cantPorDia = new HashMap<String, Integer>();
+            String fechaActual = primero.getFechaFormat();
+            int aux = 1;
+            int i = 1;
+            while (i < clientes1.size()) {
+                Cliente client = clientes1.get(i);
+                if (!client.getFechaFormat().equalsIgnoreCase(fechaActual)) {
+                    cantPorDia.put(fechaActual, aux);
+                    aux = 1;
+                    fechaActual = client.getFechaFormat();
+                } else {
+                    aux++;
+                }
+                i++;
             }
-            i++;
-        }
-        cantPorDia.put(fechaActual,aux);
+            cantPorDia.put(fechaActual, aux);
 
-        return cantPorDia;
+            return cantPorDia;
+        }
+        return null;
     }
 }
+

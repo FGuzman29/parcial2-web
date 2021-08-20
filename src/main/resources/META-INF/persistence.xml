@@ -18,7 +18,7 @@
       <property name="javax.persistence.jdbc.password" value="admin" />
       <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
       <property name="hibernate.show_sql" value="true"/>
-      <property name="javax.persistence.schema-generation.database.action" value="update"/>
+      <property name="javax.persistence.schema-generation.database.action" value="create-drop"/>
 
 
     </properties>

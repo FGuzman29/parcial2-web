@@ -5,41 +5,20 @@
             <form class="form"  id = "form" method="post" action="/acortarEnlace" >
                 <div class="input-group">
                     <label class="input-group-text" for="link">Enlace: </label>
-<<<<<<< Updated upstream
-                    <input type="text" class="form-control" placeholder="Ingrese enlace" id="link" name="link">
-                    <button type="submit" class="btn btn-primary">Acortar</button>
-||||||| constructed merge base
-                    <input type="text" class="form-control" placeholder="Ingrese enlace" id="link" name="link" required>
-                    <button type="submit" class="btn btn-primary">Acortar</button>
-=======
                     <input type="text" class="form-control" placeholder="Ingrese enlace" id="link" name="link" required>
                     <input type="text" id = "fotoURL" name = "fotoURL" value="" hidden >
                     <button id = "submit" class="btn btn-primary">Acortar</button>
->>>>>>> Stashed changes
                 </div>
             </form>
         </div>
     </div>
     <div class="card m-auto mt-4" style="max-width: 80%;">
         <div class="card-header">
-            <h4 class="font-weight-normal ">Enlaces Acortados</h4>
+            <h4 class="font-weight-normal text-center">Enlaces Acortados</h4>
 
         </div>
 
             #foreach($link in $links)
-<<<<<<< Updated upstream
-                <tr>
-                    <td style="max-width: 50%"><p>$link.URL</p></td>
-                    <td style="max-width: 40%"><a href="/re/$link.idEnlace">$link.URLAcostarda</a></td>
-                    <td style="max-width: 10%"><a class="btn btn-primary" href="/ver/$link.idEnlace">Ver</a></td>
-                </tr>
-||||||| constructed merge base
-                <tr>
-                    <td style="max-width: 50%"><p>$link.URL</p></td>
-                    <td style="max-width: 40%"><a href="https://$link.URLAcostarda">$link.URLAcostarda</a></td>
-                    <td style="max-width: 10%"><a class="btn btn-primary" href="/ver/$link.idEnlace">Ver</a></td>
-                </tr>
-=======
                 <div class="card mb-3">
                     <div class="row g-0">
                         <div class="col-md-4">
@@ -56,19 +35,11 @@
                     </div>
                 </div>
 
->>>>>>> Stashed changes
             #end
 
         </div>
 
     </div>
-<<<<<<< Updated upstream
-#parse("publico/footer.vm")
-||||||| constructed merge base
-#parse("publico/footer.vm")
-
-=======
 
 #parse("publico/footer.vm")
 
->>>>>>> Stashed changes

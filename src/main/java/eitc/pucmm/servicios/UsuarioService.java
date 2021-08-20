@@ -30,7 +30,7 @@ public class UsuarioService extends GestionDb<Usuario> {
     public List<Usuario> findAllByUsuario(String user){
         EntityManager em = getEntityManager();
         Query query = em.createNamedQuery("Usuario.findAllByUsuario");
-        query.setParameter("user", "%"+user+"%");
+        query.setParameter("user", user);
         List<Usuario> lista = query.getResultList();
         return lista;
 

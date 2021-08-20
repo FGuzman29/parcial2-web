@@ -1,18 +1,3 @@
-<<<<<<< Updated upstream
-eitc/pucmm/servicios/EnlaceService.java
- eitc.pucmm.servicios.EnlaceService
-||||||| constructed merge base
-eitc/pucmm/entidades/Cliente.java
- eitc.pucmm.entidades.Cliente
-eitc/pucmm/servicios/GestionDb.java
- eitc.pucmm.servicios.GestionDb
-eitc/pucmm/servicios/ClienteService.java
- eitc.pucmm.servicios.ClienteService
-eitc/pucmm/servicios/BootStrapServices.java
- eitc.pucmm.servicios.BootStrapServices
-eitc/pucmm/servicios/EnlaceService.java
- eitc.pucmm.servicios.EnlaceService
-=======
 eitc/pucmm/controladores/ApiControlador.java
  eitc.pucmm.controladores.ApiControlador
 eitc/pucmm/soapServices/SoapWebService.java
@@ -31,39 +16,10 @@ eitc/pucmm/servicios/BootStrapServices.java
  eitc.pucmm.servicios.BootStrapServices
 eitc/pucmm/entidades/Enlace.java
  eitc.pucmm.entidades.Enlace
->>>>>>> Stashed changes
 eitc/pucmm/entidades/Usuario.java
  eitc.pucmm.entidades.Usuario
  eitc.pucmm.entidades.Usuario$RoleasAPP
-<<<<<<< Updated upstream
-eitc/pucmm/servicios/ClienteService.java
- eitc.pucmm.servicios.ClienteService
-eitc/pucmm/servicios/UsuarioService.java
- eitc.pucmm.servicios.UsuarioService
-eitc/pucmm/entidades/Cliente.java
- eitc.pucmm.entidades.Cliente
-eitc/pucmm/servicios/GestionDb.java
- eitc.pucmm.servicios.GestionDb
-eitc/pucmm/servicios/BootStrapServices.java
- eitc.pucmm.servicios.BootStrapServices
-eitc/pucmm/entidades/Enlace.java
- eitc.pucmm.entidades.Enlace
-eitc/pucmm/controladores/ApiControlador.java
- eitc.pucmm.controladores.ApiControlador
-eitc/pucmm/Main.java
- eitc.pucmm.Main
-||||||| constructed merge base
-eitc/pucmm/servicios/UsuarioService.java
- eitc.pucmm.servicios.UsuarioService
-eitc/pucmm/entidades/Enlace.java
- eitc.pucmm.entidades.Enlace
-eitc/pucmm/controladores/ApiControlador.java
- eitc.pucmm.controladores.ApiControlador
-eitc/pucmm/Main.java
- eitc.pucmm.Main
-=======
 eitc/pucmm/controladores/SoapControladora.java
  eitc.pucmm.controladores.SoapControladora
 eitc/pucmm/servicios/EnlaceService.java
  eitc.pucmm.servicios.EnlaceService
->>>>>>> Stashed changes
