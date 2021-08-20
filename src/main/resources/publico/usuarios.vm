@@ -2,7 +2,7 @@
 
 <div class="card m-auto mt-3" style="max-width: 80%">
     <div class="card-header">
-        <h4 class="font-weight-normal text-center">Lista de Usuarios</h4>
+        <h4 class="font-weight-normal ">Usuarios</h4>
     </div>
     <div class="card-body">
         <table class="table">
@@ -11,45 +11,32 @@
                 <th >Usuario</th>
                 <th >Nombre</th>
                 <th >Rol</th>
+                <th >Fecha de creacion</th>
                 <th >Modificar Credenciales</th>
-                <th >Eliminacion Usuarios</th>
             </tr>
             </thead>
             <tbody>
-                #foreach($usuarioAct in $usuarios)
+                #foreach($usuario in $usuarios)
                     <tr>
-                        <td>$usuarioAct.usuario</td>
-                        <td>$usuarioAct.nombre</td>
-                        <td>$usuarioAct.rol</td>
-
-                        #if($usuarioAct.rol != "ROLE_ADMIN")
-                            <form action="/ascender/$usuarioAct.idUsuario" method="post">
-                                <td><button class="btn btn-warning" type="submit">Ascender Rol</button></td>
-                            </form>
+                        <td>$usuario.user</td>
+                        <td>$usuario.nombre</td>
+                        <td>$usuario.rol</td>
+                        <td>$usuario.fecha</td>
+                        #if($usuario.rol != "admin")
+                            <td><button class="btn btn-warning" onclick="ascenderUsuario($usuario.id)">Ascender Rol</button></td>
                         #end
-
-                        #if($usuario.usuario=="admin" && $usuarioAct.usuario != $usuario.usuario)
-                            #if($usuarioAct.rol == "ROLE_ADMIN")
-                                <form action="/descender/$usuarioAct.idUsuario" method="post">
-                                    <td><button class="btn btn-warning" type="submit">Descender Rol</button></td>
-                                </form>
-                            #end
-                                <form action="/eliminar/$usuarioAct.idUsuario" method="post">
-                                    <td><button class="btn btn-danger" type="submit">Eliminar usuario</button></td>
-                                </form>
-                        #else
-                            #if($usuarioAct.rol != "ROLE_ADMIN")
-                                <form action="/eliminar/$usuarioAct.idUsuario" method="post">
-                                    <td><button class="btn btn-danger" type="submit">Eliminar usuario</button></td>
-                                </form>
-                            #end
-                        #end
-                    </tr>
                 #end
+                </tr>
             </tbody>
         </table>
     </div>
 </div>
 
-
+<script>
+    function ascenderUsuario(id){
+        if(confirm("Desea ascender usuario a Admin?")){
+            window.location.href = "/ascender/"+id;
+        }
+    }
+</script>
 #parse("publico/footer.vm")

@@ -1,7 +1,12 @@
 package eitc.pucmm.servicios;
 
+<<<<<<< Updated upstream
+||||||| constructed merge base
+import com.sun.tools.jconsole.JConsoleContext;
+=======
 import com.sun.tools.jconsole.JConsoleContext;
 import eitc.pucmm.Main;
+>>>>>>> Stashed changes
 import eitc.pucmm.entidades.Enlace;
 import kong.unirest.Unirest;
 
@@ -13,7 +18,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.ResultSet;
+<<<<<<< Updated upstream
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+||||||| constructed merge base
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+=======
 import java.util.*;
+>>>>>>> Stashed changes
 
 public class EnlaceService extends GestionDb<Enlace> {
 
@@ -34,8 +50,8 @@ public class EnlaceService extends GestionDb<Enlace> {
         EntityManager em = getEntityManager();
         boolean res = false;
         try {
-            Query query = em.createQuery("select e from Enlace e where e.URLAcostarda like :cod", Enlace.class);
-            query.setParameter("cod",cod+"%");
+            Query query = em.createNativeQuery("select * from Enlace where URLAcostarda = " + cod.toString(), Enlace.class);
+
              res = query.getResultList().isEmpty();
         } catch (Exception e) {
             res = true;
@@ -76,11 +92,21 @@ public class EnlaceService extends GestionDb<Enlace> {
 
     public Enlace findEnlace(String path) {
         EntityManager em = getEntityManager();
-        Query query = em.createQuery("select e from Enlace e where e.URLAcostarda like :cod" , Enlace.class);
-        query.setParameter("cod","'%"+path+"%'");
-        List<Enlace> enlaces  = query.getResultList();
-        return enlaces.get(0);
+        List<Enlace> enlaces;
+        try {
+            Query query = em.createNativeQuery("select * from Enlace where URLAcostarda = " + path.toString(), Enlace.class);
+            enlaces = query.getResultList();
+            return enlaces.get(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
+<<<<<<< Updated upstream
+||||||| constructed merge base
+
+
+=======
 
 
     public String getPreview(String url) {
@@ -109,4 +135,5 @@ public class EnlaceService extends GestionDb<Enlace> {
         }
         return cod;
     }
+>>>>>>> Stashed changes
 }

@@ -6,7 +6,6 @@ import eitc.pucmm.controladores.ApiControlador;
 import eitc.pucmm.controladores.SoapControladora;
 import eitc.pucmm.entidades.Usuario;
 import eitc.pucmm.servicios.BootStrapServices;
-import eitc.pucmm.servicios.UsuarioService;
 import io.javalin.Javalin;
 import io.javalin.core.util.RouteOverviewPlugin;
 import io.javalin.plugin.rendering.JavalinRenderer;
@@ -51,9 +50,9 @@ public class Main {
     }
 
     public static String codeGenerator() {
-        int[] arr = {58, 59, 60, 61, 62, 63, 64};
+        int[] arr = {58, 59, 60, 61, 62, 63, 64, 91, 92, 93, 94, 95, 96};
         int leftLimit = 48; // letter 'a'
-        int rightLimit = 90; // letter 'z'
+        int rightLimit = 122; // letter 'z'
         int targetStringLength = 10;
         Random random = new Random();
         StringBuilder buffer = new StringBuilder(targetStringLength);
@@ -71,17 +70,12 @@ public class Main {
         return generatedString;
     }
     private static void EntrarDatos() {
-
-        if(UsuarioService.getInstancia().autenticarUsuario("admin","admin") == null)
-        {
-            //anadiendo los usuarios.
-            Usuario usuario1 = new Usuario();
-            usuario1.setUsuario("admin");
-            usuario1.setNombre("admin");
-            usuario1.setRol(Usuario.RoleasAPP.ROLE_ADMIN);
-            usuario1.setPassword("admin");
-            UsuarioService.getInstancia().crear(usuario1);
-        }
+        //anadiendo los usuarios.
+        Usuario usuario1 = new Usuario();
+        usuario1.setUsuario("admin");
+        usuario1.setNombre("John");
+        usuario1.setRol(Usuario.RoleasAPP.ROLE_ADMIN);
+        usuario1.setPassword("admin");
     }
 
     public static String getModoConexion() {
