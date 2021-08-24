@@ -1,6 +1,5 @@
 package eitc.pucmm.ApiServices;
 
-import com.google.gson.Gson;
 import eitc.pucmm.entidades.Cliente;
 import eitc.pucmm.entidades.Enlace;
 import eitc.pucmm.servicios.EnlaceService;
@@ -9,6 +8,7 @@ import eitc.pucmm.servicios.UsuarioService;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 import java.io.IOException;
+
 
 
 @WebService
@@ -23,29 +23,42 @@ public class SoapWebService {
 
     @WebMethod
     public Enlace[] getEnlaces(String user){
-        return EnlaceService.getInstancia().getEnlaces(user);
+        return crearArreglo(user);
     }
 
     @WebMethod
     public Enlace getEnlace(int enlace,String user){
-        Enlace enlace1 = enlaceService.find(enlace);
-        if(enlace1 != null){
-            if(enlace1.getUsuario().getUsuario().equalsIgnoreCase(user));
-            System.out.println(enlace1.getUsuario().getUsuario());
-                return enlace1;
-        }
-        return enlace1;
+        return generarEnlace(enlaceService.find(enlace));
     }
 
     @WebMethod
-    public String registrarEnlace(String url,String usuario) throws IOException {
-        return new Gson().toJson(EnlaceService.getInstancia().registrarEnlace(url,usuario)).toString();
+    public Enlace registrarEnlace(String url,String usuario) throws IOException {
+        return generarEnlace(EnlaceService.getInstancia().registrarEnlace(url,usuario));
     }
-
 
     @WebMethod
     public Cliente[] getClientes(int id){
         Enlace enlace = EnlaceService.getInstancia().find(id);
         return enlace.getClientes().toArray(new Cliente[enlace.getClientes().size()]);
+    }
+
+    public Enlace[] crearArreglo(String user){
+        Enlace[] enlaces = EnlaceService.getInstancia().getEnlaces(user);
+        for(int i = 0; i < enlaces.length; i++){
+            Enlace aux = generarEnlace(enlaces[i]);
+            enlaces[i] = aux;
+        }
+        return enlaces;
+    }
+    private Enlace generarEnlace(Enlace enlace) {
+        Enlace aux = new Enlace();
+        aux.setIdEnlace(enlace.getIdEnlace());
+        aux.setURL(enlace.getURL());
+        aux.setFecha(enlace.getFecha());
+        aux.setURLAcostarda(enlace.getURLAcostarda());
+        aux.setVecesAccesidas(enlace.getVecesAccesidas());
+        aux.setFotoBase64(enlace.getFotoBase64());
+        aux.setClientes(aux.getClientes());
+        return aux;
     }
 }
