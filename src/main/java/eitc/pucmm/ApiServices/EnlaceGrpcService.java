@@ -1,5 +1,6 @@
 package eitc.pucmm.ApiServices;
 
+import com.sun.tools.jconsole.JConsoleContext;
 import eitc.pucmm.Excepciones.noExisteEnlace;
 import eitc.pucmm.entidades.Cliente;
 import eitc.pucmm.entidades.Enlace;
@@ -19,13 +20,13 @@ public class EnlaceGrpcService extends EnlaceRnGrpc.EnlaceRnImplBase {
 
     public void autentificacion(EnlaceRnOuterClass.usuarioRequest request, StreamObserver<EnlaceRnOuterClass.usuarioResponse> responseObserver){
         boolean autentificar = (usuarioService.autenticarUsuario(request.getUsuario(),request.getPassword()) != null) ? true:false;
+        System.out.println(autentificar);
         responseObserver.onNext(EnlaceRnOuterClass.usuarioResponse.newBuilder().setOk(autentificar).build());
         responseObserver.onCompleted();
     }
     public void registrarEnlace(EnlaceRnOuterClass.EnlaceRequest request, StreamObserver<EnlaceRnOuterClass.EnlaceResponse> responseObserver){
-        Enlace aux = null;
         try {
-            aux = enlaceService.registrarEnlace(request.getEnlace(),request.getUsuario());
+            Enlace aux = enlaceService.registrarEnlace(request.getEnlace(),request.getUsuario());
             responseObserver.onNext(convertir(aux));
             responseObserver.onCompleted();
         } catch (IOException e) {

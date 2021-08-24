@@ -123,6 +123,7 @@ public class EnlaceService extends GestionDb<Enlace> {
     }
 
     public Enlace registrarEnlace(String url,String usuario) throws IOException {
+        System.out.println(usuario);
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
         connection.setRequestMethod("HEAD");
         int responseCode = connection.getResponseCode();
@@ -131,20 +132,21 @@ public class EnlaceService extends GestionDb<Enlace> {
         if (200 <= responseCode && responseCode <= 399 || responseCode == 403) {
             Enlace enlace = new Enlace();
             if(!usuario.equalsIgnoreCase("anonimo")) {
-
                 Usuario user = UsuarioService.getInstancia().findAllByUsuario(usuario).get(0);
                 enlace.setUsuario(user);
-
-                String preview = EnlaceService.getInstancia().getPreview(url);
-                String acortado = EnlaceService.getInstancia().getAcortado();
-
-                //enlace.setFotoBase64(preview);
-                enlace.setURL(url);
-                enlace.setURLAcostarda(acortado);
-
-                EnlaceService.getInstancia().crear(enlace);
-                return enlace;
             }
+
+            String preview = EnlaceService.getInstancia().getPreview(url);
+            String acortado = EnlaceService.getInstancia().getAcortado();
+
+            enlace.setFotoBase64(preview);
+            enlace.setURL(url);
+            enlace.setURLAcostarda(acortado);
+
+            enlace = EnlaceService.getInstancia().crear(enlace);
+            System.out.println(enlace.getIdEnlace());
+            return enlace;
+
         }
         return null;
     }
