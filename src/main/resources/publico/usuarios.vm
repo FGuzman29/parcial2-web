@@ -1,0 +1,55 @@
+#parse("publico/header.vm")
+
+<div class="card m-auto mt-3" style="max-width: 80%">
+    <div class="card-header">
+        <h4 class="font-weight-normal text-center">Lista de Usuarios</h4>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+            <tr>
+                <th >Usuario</th>
+                <th >Nombre</th>
+                <th >Rol</th>
+                <th >Modificar Credenciales</th>
+                <th >Eliminacion Usuarios</th>
+            </tr>
+            </thead>
+            <tbody>
+                #foreach($usuarioAct in $usuarios)
+                    <tr>
+                        <td>$usuarioAct.usuario</td>
+                        <td>$usuarioAct.nombre</td>
+                        <td>$usuarioAct.rol</td>
+
+                        #if($usuarioAct.rol != "ROLE_ADMIN")
+                            <form action="/ascender/$usuarioAct.idUsuario" method="post">
+                                <td><button class="btn btn-warning" type="submit">Ascender Rol</button></td>
+                            </form>
+                        #end
+
+                        #if($usuario.usuario=="admin" && $usuarioAct.usuario != $usuario.usuario)
+                            #if($usuarioAct.rol == "ROLE_ADMIN")
+                                <form action="/descender/$usuarioAct.idUsuario" method="post">
+                                    <td><button class="btn btn-warning" type="submit">Descender Rol</button></td>
+                                </form>
+                            #end
+                                <form action="/eliminar/$usuarioAct.idUsuario" method="post">
+                                    <td><button class="btn btn-danger" type="submit">Eliminar usuario</button></td>
+                                </form>
+                        #else
+                            #if($usuarioAct.rol != "ROLE_ADMIN")
+                                <form action="/eliminar/$usuarioAct.idUsuario" method="post">
+                                    <td><button class="btn btn-danger" type="submit">Eliminar usuario</button></td>
+                                </form>
+                            #end
+                        #end
+                    </tr>
+                #end
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+#parse("publico/footer.vm")

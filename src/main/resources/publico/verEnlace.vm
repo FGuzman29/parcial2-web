@@ -1,0 +1,169 @@
+#parse("publico/header.vm")
+<div class="row row-cols-1 row-cols-md-5 g-4 mb-3 mt-3 m-auto  text-center" style="max-width: 97%">
+
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Original</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">$enlace.URL</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col" >
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Acortado</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">$enlace.URLAcostarda</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col" >
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Creación</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">$enlace.fecha</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Total de Visitas</h5>
+
+            </div>
+            <div class="card-body">
+                <p class="card-text">$enlace.vecesAccesidas</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Codigo QR</h5>
+            </div>
+            <div class="card-body">
+                <a href="/re/$enlace.idEnlace"> <div  class="m-auto" id="qrcode" onload="generateQR()" style="max-width: 80%; max-height: 80%"></div></a>
+            </div>
+        </div>
+    </div>
+
+    </div>
+<div class="row row-cols-1 row-cols-md-2 mb-3 mt-3 m-auto  text-center" style="max-width: 97%">
+    <div class="col-6">
+
+    <div class="card m-auto" style="max-width: 95%; padding-bottom: 10px">
+        <div class="card-header">
+            <h5 class="card-title text-center">
+                Grafico de visitas
+            </h5>
+
+        </div>
+        <div class="card-body">
+            #if($map.entrySet().size() > 0)
+                <div class="m-auto" id="piechart" style="width: 90%; height: 500px;"></div>
+            #else
+                <h3 class="m-auto text-center">No hay datos disponibles</h3>
+            #end
+        </div>
+    </div>
+    </div>
+    <div class="col-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Preview</h5>
+            </div>
+            <div class="card-body">
+                <img src="data:image/png;base64,${enlace.getFotoBase64()}" class="img-fluid rounded-start">
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="card m-auto" style="max-width: 95%">
+        <div class="card-header">
+            <h5 class="card-title text-center" >
+                Lista de Visitas Realizadas
+            </h5>
+
+        </div>
+        <div class="card-body">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">IP</th>
+                <th scope="col">Navegador</th>
+                <th scope="col">SO</th>
+                <th scope="col">Fecha</th>
+            </tr>
+            </thead>
+            <tbody>
+                #foreach($visita in $enlace.clientes)
+                    <tr>
+                        <td>$visita.ip</td>
+                        <td>$visita.navegador</td>
+                        <td>$visita.Sistema</td>
+                        <td>$visita.fecha</td>
+                    </tr>
+                #end
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+
+<script type="text/javascript" >#include("/publico/qrcode.min.js")</script>
+
+<script type="text/javascript">
+    var qrcode = new QRCode(document.getElementById("qrcode"), {
+        text: "$enlace.URLAcostarda",
+        width: 160,
+        height: 160,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+    });
+
+    window.onload = generateQR()
+</script>
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+        #if($map.entrySet().size() > 0)
+
+        function drawChart() {
+
+            var data = google.visualization.arrayToDataTable([
+                ['Element', 'Visitas', { role: 'style' }],
+                #foreach ($mapEntry in $map.entrySet())
+                    ['$mapEntry.key',$mapEntry.value,'blue'],
+                #end
+
+
+            ]);
+
+
+            var options = {
+                title: 'Visitas por fecha',
+                height: 400,
+            };
+
+            var chart = new google.visualization.ColumnChart(document.getElementById('piechart'));
+
+            chart.draw(data, options);
+        #else
+            const div =  document.getElementById('piechart')
+            div.innerHTML("<h1>No hay estadisticas disponibles</h1>")
+        #end
+    }
+</script>
+
+#parse("publico/footer.vm")

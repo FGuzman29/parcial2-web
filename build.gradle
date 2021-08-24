@@ -1,0 +1,98 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id 'idea' //plugins para la integración con el IDEA.
+    id 'com.google.protobuf' version '0.8.17'
+
+}
+
+group 'eitc.pucmm'
+version '1.0-SNAPSHOT'
+
+mainClassName="eitc.pucmm.Main"
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+
+    //Framework
+    implementation 'io.javalin:javalin:3.13.7'
+    implementation 'org.slf4j:slf4j-simple:1.7.30'
+
+    //Base de datos
+    compile 'com.h2database:h2:1.4.200'
+
+    //ORM
+    compile 'org.hibernate:hibernate-core:5.4.17.Final'
+    compile 'org.hibernate:hibernate-entitymanager:5.4.17.Final'
+
+    //Plantilla
+    compile "org.apache.velocity:velocity-engine-core:2.2"
+
+    //Encriptacion
+    implementation 'org.jasypt:jasypt:1.9.3'
+
+    implementation 'com.konghq:unirest-java:3.11.09'
+    implementation 'com.google.code.gson:gson:2.8.7'
+
+    //SOAP
+    compile group: 'org.eclipse.jetty', name: 'jetty-http-spi', version: '9.4.30.v20200611'
+    compile "org.glassfish.jaxb:jaxb-runtime:2.4.0-b180830.0438"
+    compile "com.sun.xml.ws:jaxws-rt:2.3.1"
+    compile "com.sun.xml.ws:rt:2.3.1"
+
+    //gRPC y ProtoBuf
+    implementation 'io.grpc:grpc-netty-shaded:1.39.0'
+    implementation 'io.grpc:grpc-protobuf:1.39.0'
+    implementation 'io.grpc:grpc-stub:1.39.0'
+    compileOnly 'org.apache.tomcat:annotations-api:6.0.53'
+    implementation 'com.google.protobuf:protobuf-java:3.17.3'
+}
+shadowJar{
+    archivesBaseName = 'app'
+    archiveClassifier = ''
+    archiveVersion = ''
+}
+
+task stage {
+    dependsOn shadowJar
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.17.2"
+    }
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.39.0'
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
+    }
+
+    generatedFilesBaseDir = "$projectDir/generated"
+}
+clean {
+    delete protobuf.generatedFilesBaseDir
+}
+idea {
+    module {
+        // proto files and generated Java files are automatically added as
+        // source dirs.
+        // If you have additional sources, add them here:
+        sourceDirs += file("src/generated");
+    }
+}
+
+
+
