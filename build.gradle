@@ -23,7 +23,7 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 
     //Framework
-    implementation 'io.javalin:javalin:3.13.7'
+    implementation 'io.javalin:javalin:3.13.11'
     implementation 'org.slf4j:slf4j-simple:1.7.30'
 
     //Base de datos
@@ -38,9 +38,12 @@ dependencies {
 
     //Encriptacion
     implementation 'org.jasypt:jasypt:1.9.3'
-
-    implementation 'com.konghq:unirest-java:3.11.09'
     implementation 'com.google.code.gson:gson:2.8.7'
+
+    //Libreria para JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.10.5'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.10.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.10.5'
 
     //SOAP
     compile group: 'org.eclipse.jetty', name: 'jetty-http-spi', version: '9.4.30.v20200611'
@@ -54,6 +57,10 @@ dependencies {
     implementation 'io.grpc:grpc-stub:1.39.0'
     compileOnly 'org.apache.tomcat:annotations-api:6.0.53'
     implementation 'com.google.protobuf:protobuf-java:3.17.3'
+
+    //unirest
+    implementation 'com.konghq:unirest-java:3.11.09'
+
 }
 shadowJar{
     archivesBaseName = 'app'

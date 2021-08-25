@@ -3,8 +3,10 @@ package eitc.pucmm;
 
 
 import eitc.pucmm.ApiServices.EnlaceGrpcService;
+import eitc.pucmm.ApiServices.RestService;
 import eitc.pucmm.Server.GrpcServer;
 import eitc.pucmm.controladores.ApiControlador;
+import eitc.pucmm.controladores.RestControlador;
 import eitc.pucmm.controladores.SoapControladora;
 import eitc.pucmm.entidades.Usuario;
 import eitc.pucmm.servicios.BootStrapServices;
@@ -44,7 +46,7 @@ public class Main {
             config.enableCorsForAllOrigins();
         });
         new SoapControladora(app).aplicarRutas();
-
+        new RestService(app).aplicarRutas();
         app.start(getHerokuAssignedPort());
         //creando los endpoint de las rutas.
         new ApiControlador(app).aplicarRutas();

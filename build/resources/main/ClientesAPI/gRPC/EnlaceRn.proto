@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package enlacern;
+
+message usuarioRequest{
+  string usuario = 1;
+  string password = 2;
+}
+
+message usuarioResponse{
+  bool ok = 1;
+}
+
+message EnlaceRequest{
+  string enlace = 1;
+  string usuario = 2;
+}
+
+message EnlaceResponse{
+  int32 enlaceId = 1;
+  string url = 2;
+  string fecha = 3;
+  string acortado = 4;
+  int32 veces = 5;
+  string foto = 6;
+
+}
+message enlace{
+  string user = 1;
+}
+
+message ListaEnlace{
+  repeated EnlaceResponse elace = 1;
+}
+
+message clientesRequest{
+  int32 idEnlace = 1;
+}
+
+message cliente{
+  string fecha =1;
+  string ip = 2;
+  string navegador = 3;
+  string sistema =4;
+
+}
+message clienteReponse{
+  repeated cliente clientes = 1;
+}
+service EnlaceRn{
+  rpc autentificacion(usuarioRequest) returns (usuarioResponse);
+  rpc registrarEnlace(EnlaceRequest) returns (EnlaceResponse);
+  rpc getEnlace(clientesRequest) returns (EnlaceResponse);
+  rpc getEnlaces(enlace) returns (ListaEnlace);
+  rpc getClientes(clientesRequest) returns (clienteReponse);
+}
