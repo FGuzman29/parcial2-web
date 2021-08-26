@@ -15,9 +15,7 @@ import java.util.Scanner;
 public class ClienteRest {
 
     public static void main(String[] args) {
-
         Scanner sc = new Scanner(System.in);
-
         String url;
         String usuario;
         String password;
