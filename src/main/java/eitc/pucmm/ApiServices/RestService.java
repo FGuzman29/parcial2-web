@@ -47,7 +47,6 @@ public class RestService {
 
     public RestService(Javalin app) {
         this.app = app;
-//        filtroCors();
     }
 
     public void aplicarRutas() {
@@ -76,13 +75,18 @@ public class RestService {
 
             app.post("/login/RestApi", ctx -> {
 
-                String usuario = ctx.formParam("usuario");
-                String password = ctx.formParam("password");
+                String usuario = ctx.queryParam("usuario");
+                String password = ctx.queryParam("password");
+
+                System.out.println(usuario);
+                System.out.println(password);
                 Usuario usuarioObj=UsuarioService.getInstancia().autenticarUsuario(usuario,password);
                 if(usuarioObj == null)
                 {
+                    System.out.println("Autentificacion no Correcta");
                     ctx.status(UNAUTHORIZED).result("Autentificacion no Correcta");
                 }else{
+                    System.out.println(usuarioObj.getUsuario());
                     ctx.json(generacionJsonWebToken(usuarioObj));
                 }
 
@@ -149,8 +153,8 @@ public class RestService {
 
                 //crear enlace
                 post("/registrarURL", ctx -> {
-                    String usuario = ctx.formParam("usuario");
-                    String url = ctx.formParam("url");
+                    String usuario = ctx.queryParam("usuario");
+                    String url = ctx.queryParam("url");
                     ctx.json(RestControlador.getInstancia().registrarEnlace(url,usuario));
                 });
             });
@@ -171,30 +175,6 @@ public class RestService {
 
 
     }
-
-//    private static void filtroCors(){
-//
-//        //Enviando la información a solicitud del CORS
-//        app.options("/*", ctx -> {
-//            System.out.println("Entrando al metodo de options");
-//            String accessControlRequestHeaders = ctx.header("Access-Control-Request-Headers");
-//            if (accessControlRequestHeaders != null) {
-//                ctx.header("Access-Control-Allow-Headers",accessControlRequestHeaders);
-//            }
-//
-//            String accessControlRequestMethod = ctx.header("Access-Control-Request-Method");
-//            if (accessControlRequestMethod != null) {
-//                ctx.header("Access-Control-Allow-Methods",accessControlRequestMethod);
-//            }
-//        });
-//
-//        //Filtro para validar el CORS
-//        before(ctx -> {
-//            System.out.println("Aplicando header del API del CORS");
-//            ctx.header("Access-Control-Allow-Origin", "*");
-//            //response.type("application/json");
-//        });
-//    }
 
     private static LoginResponse generacionJsonWebToken(Usuario usuario){
         LoginResponse loginResponse = new LoginResponse();
@@ -219,9 +199,6 @@ public class RestService {
         loginResponse.setExpires_in(fechaExpiracion.getTime());
         return loginResponse;
     }
-
-
-
     private String getOS(String user){
         String detalles = "";
         if(user.indexOf("windows") >= 0){
