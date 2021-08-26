@@ -1,3 +1,5 @@
+eitc/pucmm/servicios/EnlaceService.java
+ eitc.pucmm.servicios.EnlaceService
 eitc/pucmm/ApiServices/EnlaceGrpcService.java
  eitc.pucmm.ApiServices.EnlaceGrpcService
 eitc/pucmm/ApiServices/SoapWebService.java
@@ -88,9 +90,5 @@ eitc/pucmm/ApiServices/RestService.java
  eitc.pucmm.ApiServices.RestService
 eitc/pucmm/controladores/SoapControladora.java
  eitc.pucmm.controladores.SoapControladora
-eitc/pucmm/servicios/EnlaceService.java
- eitc.pucmm.servicios.EnlaceService
 eitc/pucmm/ApiServices/ClienteRest.java
  eitc.pucmm.ApiServices.ClienteRest
- eitc.pucmm.ApiServices.ClienteRest$1
- eitc.pucmm.ApiServices.ClienteRest$2
